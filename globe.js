@@ -1,380 +1,1797 @@
-:root {
-  --ink: #18252b;
-  --muted: #5c6b73;
-  --paper: #f7f3eb;
-  --panel: rgba(255, 255, 255, 0.88);
-  --sea: #87b5c1;
-  --land: #90b49a;
-  --line: rgba(24, 37, 43, 0.15);
-  --accent: #9abea0;
-  --gold: #bfd2c3;
-  --shadow: 0 24px 80px rgba(21, 33, 42, 0.22);
+const canvas = document.querySelector("#globe");
+const ctx = canvas.getContext("2d");
+const destinationSelect = document.querySelector("#destination");
+const statusText = document.querySelector("#statusText");
+const distanceText = document.querySelector("#distanceText");
+const arrivalDialog = document.querySelector("#arrivalDialog");
+const arrivalTitle = document.querySelector("#arrivalTitle");
+const arrivalDate = document.querySelector("#arrivalDate");
+const arrivalDescription = document.querySelector("#arrivalDescription");
+const arrivalImage = document.querySelector("#arrivalImage");
+const arrivalSlideshow = document.querySelector("#arrivalSlideshow");
+const previousSlideButton = document.querySelector(".slide-button.previous");
+const nextSlideButton = document.querySelector(".slide-button.next");
+const slideCount = document.querySelector("#slideCount");
+const closeDialogButton = document.querySelector(".dialog-close");
+const questButton = document.querySelector("#questButton");
+const questDialog = document.querySelector("#questDialog");
+const questCloseButton = document.querySelector(".quest-close");
+const travelTypeSelect = document.querySelector("#travelType");
+const continentChoiceSelect = document.querySelector("#continentChoice");
+const flightHoursSelect = document.querySelector("#flightHours");
+const questValidateButton = document.querySelector("#questValidate");
+const questOkButton = document.querySelector("#questOk");
+const questMessage = document.querySelector("#questMessage");
+const honeymoonOption = destinationSelect.querySelector('option[value="voyagenoce"]');
+
+let countryBoundaryLines = null;
+let countryBoundaryStatus = "loading";
+let countryBoundarySource = null;
+
+
+
+const places = {
+  anzy: {
+    name: "Anzy-le-Duc",
+    lat: 46.3186,
+    lon: 4.0639,
+  },
+  arequipa: {
+    name: "Arequipa",
+    date: "03/09/2025",
+    lat: -16.409,
+    lon: -71.5375,
+    photos: [
+      "GALERIE/AR1.jpg",
+      "GALERIE/AR2.jpg",
+      "GALERIE/AR3.jpg",
+      "GALERIE/AR4.jpg",
+      "GALERIE/AR5.jpg",
+      "GALERIE/AR6.jpg",
+    ],
+    imageAlt: "Photo d'Arequipa",
+    description:
+      "Arequipa est la première étape des hauts plateaux nous ayant permis de nous acclimater à l'altidute pour profiter des Salinas à 5000 mètres d'altitude",
+  },
+  cuzco: {
+    name: "Cuzco",
+    date: "11/09/2025",
+    lat: -13.5319,
+    lon: -71.9675,
+    photos: [
+    "GALERIE/CU1.jpg",
+	"GALERIE/CU2.jpg",
+    "GALERIE/CU3.jpg",
+    ],
+    imageAlt: "Photo de Cuzco",
+    description:
+      "Ancienne capitale de l'Empire inca, Cuzco se dresse au coeur des Andes. Ses ruelles melent murs incas, eglises coloniales et places animees. La ville est aussi l'une des portes d'entree vers la Vallee sacree.",
+  },
+  rome: {
+    name: "Rome",
+    date: "28/04/2024",
+    lat: 41.9028,
+    lon: 12.4964,
+    photos: [
+    "GALERIE/RO1.jpg",
+    ],
+    imageAlt: "Photo de Rome",
+    description:
+      "Rome est une capitale ou l'Antiquite reste visible a chaque detour. Le Colisee, les forums et les places baroques composent une ville dense et lumineuse. Chaque quartier donne l'impression de traverser plusieurs epoques.",
+  },
+lima: {
+    name: "lima",
+    date: "30/08/2025",
+    lat: -12.0464,
+    lon: -77.0428,
+    photos: [
+    "GALERIE/LI1.jpg",
+	"GALERIE/LI2.jpg",
+    "GALERIE/LI3.jpg",
+    ],
+    imageAlt: "Photo de Lima",
+    description:
+      "Lima est la capitale du Pérou, une vaste métropole côtière du Pacifique connue pour son riche patrimoine colonial, sa gastronomie réputée et son mélange d’histoire précolombienne et de vie urbaine moderne.",
+  },
+
+copenhague: {
+  name: "Copenhague",
+  date: "A definir",
+  lat: 55.6761,
+  lon: 12.5683,
+     photos: [
+    "GALERIE/COP1.jpg",
+	"GALERIE/COP2.jpg",
+    "GALERIE/COP3.jpg",
+    ],
+  imageAlt: "Photo de Copenhague",
+  description:
+    "Copenhague est la capitale du Danemark, connue pour ses canaux, ses vélos et son ambiance nordique.",
+},
+
+goteborg: {
+  name: "Gotéberg",
+  date: "Aout 2024",
+  lat: 57.7089,
+  lon: 11.9746,
+    photos: [
+    "GALERIE/GOTEBE1.jpg",
+	"GALERIE/GOTEBE2.jpg",
+    "GALERIE/GOTEBE3.jpg",
+    ],
+  imageAlt: "Photo de Gotéberg",
+  description:
+    "Gotéberg est une grande ville portuaire suédoise réputée pour son atmosphère conviviale.",
+},
+
+gotland: {
+  name: "Gotland",
+  date: "Aout 2024",
+  lat: 57.4684,
+  lon: 18.4867,
+    photos: [
+    "GALERIE/GOTLA1.jpg",
+	"GALERIE/GOTLA2.jpg",
+    "GALERIE/GOTLA3.jpg",
+    ],
+  imageAlt: "Photo de Gotland",
+  description:
+    "Gotland est une île suédoise connue pour ses paysages naturels et ses villages médiévaux.",
+},
+
+ileMaurice: {
+  name: "Ile Maurice",
+  date: "23/11/2014",
+  lat: -20.3484,
+  lon: 57.5522,
+    photos: [
+    "GALERIE/IL1.jpg",
+	"GALERIE/IL2jpg",
+    "GALERIE/IL3.jpg",
+    ],
+  imageAlt: "Photo de Ile Maurice",
+  description:
+    "L’île Maurice est une destination tropicale célèbre pour ses plages et ses lagons.",
+},
+
+kilimandjaro: {
+  name: "kilimandjaro",
+  date: "A definir",
+  lat: -3.0674,
+  lon: 37.3556,
+    photos: [
+    "GALERIE/KI1.jpg",
+	"GALERIE/KI2.jpg",
+    "GALERIE/KI3.jpg",
+    ],
+  imageAlt: "Photo de kilimandjaro",
+  description:
+    "Le kilimandjaro est la plus haute montagne d’Afrique située en Tanzanie.",
+},
+
+laSoufriere: {
+  name: "La soufrière",
+  date: "A definir",
+  lat: 16.0444,
+  lon: -61.6644,
+    photos: [
+    "GALERIE/SO1.jpg",
+	"GALERIE/SO2.jpg",
+    "GALERIE/SO3.jpg",
+    ],
+  imageAlt: "Photo de La soufrière",
+  description:
+    "La Soufrière est un volcan actif célèbre pour ses paysages naturels spectaculaires.",
+},
+
+laponie: {
+  name: "Laponie",
+  date: "A definir",
+  lat: 67.9222,
+  lon: 26.5046,
+    photos: [
+    "GALERIE/LA1.jpg",
+	"GALERIE/LA2.jpg",
+    "GALERIE/LA3.jpg",
+    ],
+  imageAlt: "Photo de Laponie",
+  description:
+    "La Laponie est une région nordique connue pour ses aurores boréales et ses paysages enneigés.",
+},
+
+leCap: {
+  name: "Le cap",
+  date: "27/11/2015",
+  lat: -33.9249,
+  lon: 18.4241,
+    photos: [
+    "GALERIE/CAP1.jpg",
+	"GALERIE/CAP2.jpg",
+    "GALERIE/CAP3.jpg",
+    ],
+  imageAlt: "Photo de Le cap",
+  description:
+    "Le Cap est une ville d’Afrique du Sud réputée pour sa montagne et son littoral.",
+},
+
+machuPicchu: {
+  name: "Machu Picchu",
+  date: "15/09/2025",
+  lat: -13.1631,
+  lon: -72.5450,
+  photos: [
+    "GALERIE/MA1.jpg",
+    "GALERIE/MA2.jpg",
+    "GALERIE/MA3.jpg",
+  ],
+  imageAlt: "Photo de Machu Picchu",
+  description:
+    "Machu Picchu : 15/09/2025 après le trek du salkantay...",
+},
+malmo: {
+  name: "Malmö",
+  date: "Aout 2024",
+  lat: 55.6050,
+  lon: 13.0038,
+    photos: [
+    "GALERIE/MALM1.jpg",
+	"GALERIE/MALM2.jpg",
+    "GALERIE/MALM3.jpg",
+	"GALERIE/MALM4.jpg",
+    ],
+  imageAlt: "Photo de Malmö",
+  description:
+    "Malmö est une ville suédoise moderne reliée au Danemark par un célèbre pont.",
+},
+
+montreal: {
+  name: "Montréal",
+  date: "09/10/2012",
+  lat: 45.5019,
+  lon: -73.5674,
+    photos: [
+    "GALERIE/MON1.jpg",
+	"GALERIE/MON2.jpg",
+    "GALERIE/MON3.jpg",
+    ],
+  imageAlt: "Photo de Montréal",
+  description:
+    "Montréal est une grande ville canadienne connue pour sa culture et son ambiance francophone.",
+},
+
+pitonFournaise: {
+  name: "Piton de la fournaise",
+  date: "24/12/2014",
+  lat: -21.2446,
+  lon: 55.7081,
+    photos: [
+    "GALERIE/PI1.jpg",
+	"GALERIE/PI2.jpg",
+    "GALERIE/PI3.jpg",
+    ],
+  imageAlt: "Photo de Piton de la fournaise",
+  description:
+    "Le Piton de la Fournaise est l’un des volcans les plus actifs du monde.",
+},
+
+porto: {
+  name: "Porto",
+  date: "14/04/2025",
+  lat: 41.1579,
+  lon: -8.6291,
+    photos: [
+    "GALERIE/PO1.jpg",
+	"GALERIE/PO2.jpg",
+    "GALERIE/PO3.jpg",
+    ],
+  imageAlt: "Photo de Porto",
+  description:
+    "Weekend de la demande en mariage ! le 14/04/2025 au bord de la mer par un temps radieu. ",
+},
+
+puno: {
+  name: "Puno",
+  date: "A definir",
+  lat: -15.8402,
+  lon: -70.0219,
+    photos: [
+    "GALERIE/PU1.jpg",
+	"GALERIE/PU2.jpg",
+    "GALERIE/PU3.jpg",
+    ],
+  imageAlt: "Photo de Puno",
+  description:
+    "Puno est une ville péruvienne située près du lac Titicaca.",
+},
+
+reserveCousteau: {
+  name: "Réserve Cousteau",
+  date: "A definir",
+  lat: 16.1775,
+  lon: -61.7750,
+    photos: [
+    "GALERIE/RE1.jpg",
+	"GALERIE/RE2.jpg",
+    "GALERIE/RE3.jpg",
+    ],
+  imageAlt: "Photo de Réserve Cousteau",
+  description:
+    "La Réserve Cousteau est un site marin réputé pour ses fonds sous-marins exceptionnels.",
+},
+
+salkantay: {
+  name: "Salkantay",
+  date: "A definir",
+  lat: -13.3402,
+  lon: -72.5449,
+    photos: [
+    "GALERIE/SAL1.jpg",
+	"GALERIE/SAL2.jpg",
+    "GALERIE/SAL3.jpg",
+    ],
+  imageAlt: "Photo de Salkantay",
+  description:
+    "Salkantay est une montagne andine célèbre pour ses sentiers de randonnée.",
+},
+
+seychelles: {
+  name: "Seychelles",
+  date: "02/07/2015",
+  lat: -4.6796,
+  lon: 55.4920,
+    photos: [
+    "GALERIE/SEY1.jpg",
+	"GALERIE/SEY2.jpg",
+    "GALERIE/SEY3.jpg",
+    ],
+  imageAlt: "Photo de Seychelles",
+  description:
+    "Aux Seychelles la vie est belle !!! et encore plus en Cata"
+},
+
+sligo: {
+  name: "Sligo",
+  date: "10/10/2010",
+  lat: 54.2766,
+  lon: -8.4761,
+    photos: [
+    "GALERIE/SLI1.jpg",
+	"GALERIE/SLI2.jpg",
+    "GALERIE/SLI3.jpg",
+    ],
+  imageAlt: "Photo de Sligo",
+  description:
+    "Une belle année , riche en apprentissage ... des Pubs ",
+},
+
+titiKaka: {
+  name: "Titi Kaka",
+  date: "A definir",
+  lat: -15.7650,
+  lon: -69.4175,
+    photos: [
+    "GALERIE/TI1.jpg",
+	"GALERIE/TI2.jpg",
+    "GALERIE/TI3.jpg",
+    ],
+  imageAlt: "Photo de Titi Kaka",
+  description:
+    "Le lac Titicaca est l’un des plus hauts lacs navigables du monde.",
+},
+
+zanzibar: {
+  name: "Zanzibar",
+  date: "A definir",
+  lat: -6.1659,
+  lon: 39.2026,
+    photos: [
+    "GALERIE/ZA1.jpg",
+	"GALERIE/ZA2.jpg",
+    "GALERIE/ZA3.jpg",
+    ],
+  imageAlt: "Photo de Zanzibar",
+  description:
+    "Zanzibar est une île tanzanienne célèbre pour ses plages et ses eaux turquoise.",
+},
+
+
+voyagenoce: {
+  name: "Polynesie Francaise ",
+  date: "08/06/2026",
+  lat: -17.6509,
+  lon: -149.4260,
+  photos: ["GALERIE/TAHITI/tahiti-3976419327.jpg"],
+  imageAlt: "Photo de Tahiti",
+  description:
+    "TAHITI !!! Nous voici arrivés à notre première destination à deux , l'ocasion de se détendre après ce magnifique mariage.merci d'avoir été là aujourd'hui pour nous entourer ",
+},
+
+};
+
+const destinationPlaces = Object.values(places).filter((place) => place.lat && place.lon);
+
+const landMasses = [
+  [
+    [-168, 72],
+    [-150, 71],
+    [-139, 60],
+    [-128, 54],
+    [-124, 48],
+    [-117, 35],
+    [-108, 28],
+    [-99, 23],
+    [-91, 18],
+    [-83, 19],
+    [-80, 26],
+    [-75, 35],
+    [-67, 44],
+    [-57, 48],
+    [-53, 57],
+    [-60, 68],
+    [-78, 74],
+    [-101, 78],
+    [-124, 74],
+    [-150, 75],
+  ],
+  [
+    [-83, 12],
+    [-76, 7],
+    [-80, -2],
+    [-77, -12],
+    [-72, -21],
+    [-70, -34],
+    [-74, -46],
+    [-70, -55],
+    [-58, -56],
+    [-49, -44],
+    [-41, -24],
+    [-35, -8],
+    [-44, 0],
+    [-52, 5],
+    [-60, 7],
+    [-66, 10],
+    [-74, 12],
+  ],
+  [
+    [-10, 36],
+    [-5, 43],
+    [2, 50],
+    [10, 55],
+    [20, 59],
+    [31, 56],
+    [37, 47],
+    [30, 41],
+    [23, 38],
+    [15, 39],
+    [10, 44],
+    [3, 43],
+    [-2, 38],
+  ],
+  [
+    [-17, 32],
+    [-7, 35],
+    [5, 37],
+    [18, 35],
+    [29, 31],
+    [35, 22],
+    [43, 12],
+    [51, 3],
+    [42, -12],
+    [35, -27],
+    [26, -34],
+    [15, -35],
+    [5, -30],
+    [-5, -20],
+    [-12, -5],
+    [-16, 11],
+  ],
+  [
+    [30, 71],
+    [52, 72],
+    [74, 68],
+    [96, 62],
+    [119, 58],
+    [143, 52],
+    [161, 43],
+    [166, 29],
+    [153, 18],
+    [139, 9],
+    [122, 2],
+    [108, -6],
+    [95, 6],
+    [82, 8],
+    [70, 20],
+    [58, 24],
+    [48, 31],
+    [39, 36],
+    [33, 45],
+  ],
+  [
+    [69, 24],
+    [78, 28],
+    [88, 26],
+    [98, 20],
+    [106, 12],
+    [109, 1],
+    [115, -7],
+    [105, -15],
+    [93, -9],
+    [82, 6],
+    [74, 14],
+  ],
+  [
+    [111, -11],
+    [122, -11],
+    [135, -13],
+    [148, -19],
+    [154, -29],
+    [148, -40],
+    [134, -44],
+    [121, -38],
+    [113, -26],
+  ],
+  [
+    [-52, 60],
+    [-43, 64],
+    [-34, 70],
+    [-23, 77],
+    [-36, 82],
+    [-52, 81],
+    [-65, 74],
+    [-72, 67],
+  ],
+  [
+    [-180, -70],
+    [-135, -67],
+    [-90, -72],
+    [-45, -69],
+    [0, -68],
+    [45, -72],
+    [90, -69],
+    [135, -67],
+    [180, -70],
+    [180, -88],
+    [-180, -88],
+  ],
+];
+
+const countryLines = [
+  [
+    [-141, 60],
+    [-124, 49],
+    [-95, 49],
+    [-67, 46],
+  ],
+  [
+    [-117, 32],
+    [-108, 31],
+    [-100, 29],
+    [-97, 26],
+  ],
+  [
+    [-101, 21],
+    [-92, 17],
+    [-88, 16],
+    [-84, 10],
+    [-79, 8],
+  ],
+  [
+    [-78, 0],
+    [-72, -5],
+    [-70, -12],
+    [-66, -18],
+    [-64, -25],
+  ],
+  [
+    [-69, -18],
+    [-69, -31],
+    [-71, -43],
+    [-68, -52],
+  ],
+  [
+    [-58, -34],
+    [-54, -25],
+    [-57, -16],
+    [-50, -6],
+    [-47, -1],
+  ],
+  [
+    [-8, 43],
+    [-2, 43],
+    [3, 43],
+    [8, 45],
+    [13, 43],
+    [18, 45],
+  ],
+  [
+    [2, 51],
+    [7, 49],
+    [12, 48],
+    [15, 52],
+    [19, 52],
+    [24, 50],
+  ],
+  [
+    [-5, 36],
+    [1, 32],
+    [10, 31],
+    [23, 31],
+    [32, 30],
+  ],
+  [
+    [10, 37],
+    [15, 41],
+    [20, 40],
+    [23, 38],
+    [29, 41],
+  ],
+  [
+    [-17, 14],
+    [-5, 16],
+    [8, 13],
+    [20, 12],
+    [33, 11],
+    [41, 12],
+  ],
+  [
+    [12, -5],
+    [20, -10],
+    [27, -17],
+    [31, -26],
+  ],
+  [
+    [30, 54],
+    [38, 48],
+    [46, 42],
+    [54, 37],
+    [64, 35],
+  ],
+  [
+    [68, 24],
+    [75, 31],
+    [83, 28],
+    [92, 25],
+    [100, 22],
+  ],
+  [
+    [103, 22],
+    [108, 16],
+    [106, 10],
+    [101, 6],
+  ],
+  [
+    [73, 8],
+    [80, 12],
+    [88, 21],
+    [91, 25],
+  ],
+  [
+    [98, 57],
+    [106, 48],
+    [115, 43],
+    [124, 40],
+    [132, 44],
+  ],
+  [
+    [116, -32],
+    [130, -25],
+    [144, -28],
+    [153, -35],
+  ],
+  [
+    [44, 12],
+    [48, 20],
+    [52, 25],
+    [56, 27],
+  ],
+  [
+    [28, -1],
+    [33, -4],
+    [36, -11],
+    [34, -18],
+    [31, -25],
+  ],
+];
+
+const islands = [
+  { lat: 54, lon: -3, radius: 8 },
+  { lat: 53, lon: -8, radius: 5 },
+  { lat: 64, lon: -19, radius: 6 },
+  { lat: 42.5, lon: 12.5, radius: 5 },
+  { lat: 40, lon: 9, radius: 4 },
+  { lat: 35, lon: 24, radius: 4 },
+  { lat: 35.8, lon: 139.5, radius: 7 },
+  { lat: 23.5, lon: 121, radius: 4 },
+  { lat: -6, lon: 107, radius: 8 },
+  { lat: 7, lon: 81, radius: 5 },
+  { lat: -20, lon: 47, radius: 7 },
+  { lat: -41, lon: 174, radius: 8 },
+  { lat: 21, lon: -77, radius: 7 },
+  { lat: 19, lon: -70, radius: 4 },
+  { lat: -51, lon: -59, radius: 5 },
+];
+
+const mapLabels = [
+
+];
+
+let view = {
+  lat: places.anzy.lat,
+  lon: places.anzy.lon,
+  zoom: 1,
+};
+
+let targetView = { ...view };
+let route = null;
+let drag = null;
+let lastTime = performance.now();
+let currentSlides = [];
+let currentSlideIndex = 0;
+let slideshowTimer = null;
+let honeymoonUnlocked = false;
+
+if (honeymoonOption) {
+  honeymoonOption.hidden = true;
 }
 
-* {
-  box-sizing: border-box;
+function getTouchDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+
+  return Math.hypot(dx, dy);
 }
 
-html,
-body {
-  overflow-y: auto;
+
+function toRad(value) {
+  return (value * Math.PI) / 180;
 }
 
-body {
-  margin: 0;
-  color: var(--ink);
-  background:
-    radial-gradient(circle at 20% 20%, rgba(144, 180, 154, 0.22), transparent 28%),
-    radial-gradient(circle at 82% 72%, rgba(154, 190, 160, 0.18), transparent 24%),
-    linear-gradient(135deg, #eaf4f2 0%, var(--paper) 52%, #e4eee6 100%);
-  font-family:
-    Inter, "Segoe UI", Roboto, Arial, sans-serif;
+function toDeg(value) {
+  return (value * 180) / Math.PI;
 }
 
-.app-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(310px, 390px);
-  gap: clamp(24px, 4vw, 54px);
-  align-items: center;
-  min-height: 100vh;
-  padding: clamp(18px, 4vw, 54px);
+function normalizeLon(value) {
+  return ((((value + 180) % 360) + 360) % 360) - 180;
 }
 
-.globe-stage {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: min(82vw, 850px);
+function coordinateRingToPoints(ring) {
+  return ring
+    .map((coordinate) => ({
+      lon: Number(coordinate[0]),
+      lat: Number(coordinate[1]),
+    }))
+    .filter((point) => Number.isFinite(point.lon) && Number.isFinite(point.lat));
 }
 
-.globe-stage::before {
-  position: absolute;
-  width: min(82vw, 820px);
-  max-width: calc(100vw - 40px);
-  aspect-ratio: 1;
-  content: "";
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.7), transparent 58%),
-    radial-gradient(circle, rgba(135, 181, 193, 0.2), transparent 70%);
-  filter: blur(14px);
-}
-
-#globe {
-  position: relative;
-  z-index: 1;
-  width: min(76vw, 960px);
-  max-width: calc(100vw - 40px);
-  height: auto;
-  touch-action: none;
-  cursor: grab;
-  filter: drop-shadow(0 36px 52px rgba(21, 33, 42, 0.28));
-}
-
-#globe:active {
-  cursor: grabbing;
-}
-
-.control-panel {
-  position: relative;
-  z-index: 2;
-  padding: clamp(22px, 4vw, 34px);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 8px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
-}
-
-.quest-panel {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--line);
-}
-
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  border: 1px solid rgba(21, 33, 42, 0.16);
-  border-radius: 8px;
-  padding: 0 18px;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.button.primary {
-  color: #fff;
-  background: var(--accent);
-}
-
-.button.ghost.dark {
-  color: var(--ink);
-  background: #fff;
-}
-
-.arrival-dialog {
-  width: min(430px, calc(100% - 30px));
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  color: var(--ink);
-  background: #fff;
-  box-shadow: var(--shadow);
-}
-
-.quest-dialog {
-  width: min(470px, calc(100% - 30px));
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  color: var(--ink);
-  background: #fff;
-  box-shadow: var(--shadow);
-}
-
-.arrival-dialog::backdrop {
-  background: rgba(8, 22, 32, 0.54);
-  backdrop-filter: blur(4px);
-}
-
-.quest-dialog::backdrop {
-  background: rgba(8, 22, 32, 0.54);
-  backdrop-filter: blur(4px);
-}
-
-.arrival-slideshow {
-  position: relative;
-  background: #d9e5e4;
-}
-
-.arrival-slideshow[hidden] {
-  display: none;
-}
-
-.arrival-slideshow img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  background: #d9e5e4;
-}
-
-.slide-button {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.66);
-  border-radius: 50%;
-  color: #fff;
-  background: rgba(21, 33, 42, 0.58);
-  font-size: 32px;
-  line-height: 1;
-  transform: translateY(-50%);
-  cursor: pointer;
-}
-
-.slide-button.previous {
-  left: 12px;
-}
-
-.slide-button.next {
-  right: 12px;
-}
-
-.slide-count {
-  position: absolute;
-  right: 14px;
-  bottom: 12px;
-  border-radius: 999px;
-  padding: 5px 10px;
-  color: #fff;
-  background: rgba(21, 33, 42, 0.62);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.arrival-content {
-  padding: 24px;
-}
-
-.quest-content {
-  display: grid;
-  gap: 12px;
-  padding: 28px;
-}
-
-.arrival-content h2 {
-  margin: 0 0 12px;
-  font-size: clamp(34px, 7vw, 48px);
-  line-height: 0.96;
-}
-
-.quest-content h2 {
-  margin: 0 0 8px;
-  font-size: clamp(32px, 7vw, 44px);
-  line-height: 0.96;
-}
-
-.arrival-content p:last-child {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.62;
-}
-
-.arrival-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: baseline;
-}
-
-.arrival-date {
-  color: #648b6d;
-  font-weight: 900;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.quest-message {
-  min-height: 24px;
-  margin: 4px 0 0;
-  color: #648b6d;
-  font-weight: 800;
-  line-height: 1.45;
-}
-
-.quest-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 6px;
-}
-
-.dialog-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 50%;
-  color: #fff;
-  background: rgba(21, 33, 42, 0.56);
-  font-size: 25px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.eyebrow {
-  margin: 0 0 10px;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-h1 {
-  margin: 0 0 14px;
-  font-size: clamp(42px, 5vw, 66px);
-  line-height: 0.95;
-}
-
-.lede {
-  margin: 0 0 28px;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-select {
-  width: 100%;
-  min-height: 50px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 0 44px 0 14px;
-  color: var(--ink);
-  background:
-    linear-gradient(45deg, transparent 50%, var(--ink) 50%) calc(100% - 23px) 21px / 7px 7px
-      no-repeat,
-    linear-gradient(135deg, var(--ink) 50%, transparent 50%) calc(100% - 17px) 21px / 7px 7px
-      no-repeat,
-    #fff;
-  font: inherit;
-  appearance: none;
-}
-
-select:focus-visible {
-  outline: 3px solid rgba(154, 190, 160, 0.42);
-  outline-offset: 2px;
-}
-
-.status-line {
-  margin: 22px 0;
-  padding: 14px 16px;
-  border-left: 4px solid var(--accent);
-  background: rgba(154, 190, 160, 0.16);
-  color: var(--ink);
-  line-height: 1.5;
-}
-
-.trip-stats {
-  display: grid;
-  gap: 14px;
-  margin: 0;
-}
-
-.trip-stats div {
-  display: grid;
-  gap: 4px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-
-dt {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-dd {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 750;
-}
-
-@media (max-width: 900px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-    align-items: start;
+function collectGeometryLines(geometry, lines) {
+  if (!geometry) {
+    return;
   }
 
-  .globe-stage {
-    min-height: auto;
+  if (geometry.type === "Polygon") {
+    geometry.coordinates.forEach((ring) => {
+      const points = coordinateRingToPoints(ring);
+      if (points.length > 1) {
+        lines.push(points);
+      }
+    });
+    return;
   }
 
-  #globe {
-    width: min(92vw, 620px);
+  if (geometry.type === "MultiPolygon") {
+    geometry.coordinates.forEach((polygon) => {
+      polygon.forEach((ring) => {
+        const points = coordinateRingToPoints(ring);
+        if (points.length > 1) {
+          lines.push(points);
+        }
+      });
+    });
+    return;
+  }
+
+  if (geometry.type === "GeometryCollection") {
+    geometry.geometries.forEach((childGeometry) => collectGeometryLines(childGeometry, lines));
   }
 }
+
+function extractCountryBoundaryLines(geoJson) {
+  const lines = [];
+
+  if (geoJson.type === "FeatureCollection") {
+    geoJson.features.forEach((feature) => collectGeometryLines(feature.geometry, lines));
+    return lines;
+  }
+
+  if (geoJson.type === "Feature") {
+    collectGeometryLines(geoJson.geometry, lines);
+    return lines;
+  }
+
+  collectGeometryLines(geoJson, lines);
+  return lines;
+}
+
+async function loadCountryBoundaries() {
+  const sources = [
+    "countries.geojson",
+    "https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/main/countries.geojson",
+    "https://datahub.io/core/geo-boundaries-world-110m/_r/-/countries.geojson",
+  ];
+
+  for (const source of sources) {
+    try {
+      const response = await fetch(source, { cache: "force-cache" });
+
+      if (!response.ok) {
+        throw new Error(`GeoJSON unavailable: ${response.status}`);
+      }
+
+      const geoJson = await response.json();
+      const lines = extractCountryBoundaryLines(geoJson);
+
+      if (!lines.length) {
+        throw new Error("GeoJSON contains no polygon boundaries");
+      }
+
+      countryBoundaryLines = lines;
+      countryBoundaryStatus = "loaded";
+      countryBoundarySource = source;
+      window.globeCountryBoundaries = {
+        status: countryBoundaryStatus,
+        source: countryBoundarySource,
+        lineCount: countryBoundaryLines.length,
+      };
+      if (!destinationSelect.value) {
+        statusText.textContent = "OK.";
+      }
+      return;
+    } catch (error) {
+      window.globeCountryBoundaries = {
+        status: "retrying",
+        source,
+        message: error.message,
+      };
+    }
+  }
+
+  countryBoundaryLines = null;
+  countryBoundaryStatus = "fallback";
+  countryBoundarySource = "manual fallback";
+  window.globeCountryBoundaries = {
+    status: countryBoundaryStatus,
+    source: countryBoundarySource,
+    lineCount: countryLines.length,
+  };
+  if (!destinationSelect.value) {
+    statusText.textContent = "Carte simplifiee chargee, fichier GeoJSON indisponible.";
+  }
+}
+
+function mercatorValue(lat) {
+  const clampedLat = Math.max(-85.0511, Math.min(85.0511, lat));
+  return Math.log(Math.tan(Math.PI / 4 + toRad(clampedLat) / 2));
+}
+
+function inverseMercator(value) {
+  return toDeg(2 * Math.atan(Math.exp(value)) - Math.PI / 2);
+}
+
+function mercatorLatitudeLimit(width, height) {
+  const aspectRatio = width / height;
+  return inverseMercator(Math.PI / aspectRatio);
+}
+
+function project(lat, lon, radius) {
+  const phi = toRad(lat);
+  const lambda = toRad(lon);
+  const phi0 = toRad(view.lat);
+  const lambda0 = toRad(view.lon);
+  const delta = lambda - lambda0;
+  const cosPhi = Math.cos(phi);
+  const z = Math.sin(phi0) * Math.sin(phi) + Math.cos(phi0) * cosPhi * Math.cos(delta);
+
+  return {
+    x: canvas.width / 2 + radius * cosPhi * Math.sin(delta),
+    y:
+      canvas.height / 2 -
+      radius * (Math.cos(phi0) * Math.sin(phi) - Math.sin(phi0) * cosPhi * Math.cos(delta)),
+    z,
+    visible: z > -0.02,
+  };
+}
+
+function distanceKm(from, to) {
+  const earthRadius = 6371;
+  const lat1 = toRad(from.lat);
+  const lat2 = toRad(to.lat);
+  const dLat = toRad(to.lat - from.lat);
+  const dLon = toRad(to.lon - from.lon);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+
+  return Math.round(earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+function latLonToVector(point) {
+  const lat = toRad(point.lat);
+  const lon = toRad(point.lon);
+
+  return {
+    x: Math.cos(lat) * Math.cos(lon),
+    y: Math.cos(lat) * Math.sin(lon),
+    z: Math.sin(lat),
+  };
+}
+
+function vectorToLatLon(vector) {
+  const hyp = Math.hypot(vector.x, vector.y);
+
+  return {
+    lat: toDeg(Math.atan2(vector.z, hyp)),
+    lon: normalizeLon(toDeg(Math.atan2(vector.y, vector.x))),
+  };
+}
+
+function greatCircle(from, to, steps = 130) {
+  const start = latLonToVector(from);
+  const end = latLonToVector(to);
+  const dot = Math.max(-1, Math.min(1, start.x * end.x + start.y * end.y + start.z * end.z));
+  const omega = Math.acos(dot);
+  const sinOmega = Math.sin(omega);
+  const points = [];
+
+  for (let index = 0; index <= steps; index += 1) {
+    const t = index / steps;
+    const a = Math.sin((1 - t) * omega) / sinOmega;
+    const b = Math.sin(t * omega) / sinOmega;
+    points.push(
+      vectorToLatLon({
+        x: a * start.x + b * end.x,
+        y: a * start.y + b * end.y,
+        z: a * start.z + b * end.z,
+      }),
+    );
+  }
+
+  return points;
+}
+
+function getGlobeRadius() {
+  const baseRadius = canvas.width * 0.42;
+  return baseRadius * view.zoom;
+}
+
+function drawSphere(radius) {
+  const gradient = ctx.createRadialGradient(
+    canvas.width * 0.38,
+    canvas.height * 0.3,
+    radius * 0.05,
+    canvas.width / 2,
+    canvas.height / 2,
+    radius,
+  );
+  gradient.addColorStop(0, "#cfe6eb");
+  gradient.addColorStop(0.54, "#87b5c1");
+  gradient.addColorStop(1, "#527f90");
+
+  ctx.save();
+  const atmosphere = ctx.createRadialGradient(
+    canvas.width / 2,
+    canvas.height / 2,
+    radius * 0.76,
+    canvas.width / 2,
+    canvas.height / 2,
+    radius * 1.12,
+  );
+  atmosphere.addColorStop(0, "rgba(113, 170, 186, 0)");
+  atmosphere.addColorStop(0.72, "rgba(113, 170, 186, 0.22)");
+  atmosphere.addColorStop(1, "rgba(113, 170, 186, 0)");
+  ctx.fillStyle = atmosphere;
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, radius * 1.12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.clip();
+
+  drawGraticule(radius);
+  drawCountryLines(radius);
+  drawMapLabels(radius);
+  drawRoute(radius);
+  drawMarkers(radius);
+
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.82)";
+  ctx.stroke();
+
+  const shine = ctx.createRadialGradient(
+    canvas.width * 0.33,
+    canvas.height * 0.24,
+    0,
+    canvas.width * 0.33,
+    canvas.height * 0.24,
+    radius * 0.7,
+  );
+  shine.addColorStop(0, "rgba(255,255,255,0.24)");
+  shine.addColorStop(0.32, "rgba(255,255,255,0.08)");
+  shine.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = shine;
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  const limbShadow = ctx.createRadialGradient(
+    canvas.width / 2,
+    canvas.height / 2,
+    radius * 0.38,
+    canvas.width / 2,
+    canvas.height / 2,
+    radius,
+  );
+  limbShadow.addColorStop(0, "rgba(0,0,0,0)");
+  limbShadow.addColorStop(0.72, "rgba(0,0,0,0.08)");
+  limbShadow.addColorStop(1, "rgba(0,0,0,0.28)");
+  ctx.fillStyle = limbShadow;
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawGraticule(radius) {
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.24)";
+
+  for (let lat = -60; lat <= 60; lat += 30) {
+    drawGeoLine(
+      Array.from({ length: 145 }, (_, index) => ({
+        lat,
+        lon: -180 + index * 2.5,
+      })),
+      radius,
+    );
+  }
+
+  for (let lon = -180; lon < 180; lon += 30) {
+    drawGeoLine(
+      Array.from({ length: 73 }, (_, index) => ({
+        lat: -90 + index * 2.5,
+        lon,
+      })),
+      radius,
+    );
+  }
+}
+
+function drawGeoLine(points, radius) {
+  let drawing = false;
+  let previousPoint = null;
+
+  ctx.beginPath();
+  points.forEach((point) => {
+    const projected = project(point.lat, point.lon, radius);
+    if (!projected.visible) {
+      drawing = false;
+      previousPoint = point;
+      return;
+    }
+
+    const crossesDateLine =
+      previousPoint && Math.abs(point.lon - previousPoint.lon) > 180;
+
+    if (!drawing || crossesDateLine) {
+      ctx.moveTo(projected.x, projected.y);
+      drawing = true;
+    } else {
+      ctx.lineTo(projected.x, projected.y);
+    }
+
+    previousPoint = point;
+  });
+  ctx.stroke();
+}
+
+function drawGeoPolygon(points, radius) {
+  let hasVisiblePoint = false;
+  let drawing = false;
+  let previousPoint = null;
+
+  ctx.beginPath();
+  points.forEach((point) => {
+    const projected = project(point.lat, point.lon, radius);
+    hasVisiblePoint ||= projected.visible;
+
+    if (!projected.visible) {
+      drawing = false;
+      previousPoint = point;
+      return;
+    }
+
+    const crossesDateLine = previousPoint && Math.abs(point.lon - previousPoint.lon) > 180;
+
+    if (!drawing || crossesDateLine) {
+      ctx.moveTo(projected.x, projected.y);
+      drawing = true;
+    } else {
+      ctx.lineTo(projected.x, projected.y);
+    }
+
+    previousPoint = point;
+  });
+
+  if (hasVisiblePoint) {
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function drawLand(radius) {
+  landMasses.forEach((polygon) => {
+    let hasVisiblePoint = false;
+
+    ctx.beginPath();
+    polygon.forEach(([lon, lat], index) => {
+      const point = project(lat, lon, radius);
+      hasVisiblePoint ||= point.visible;
+      if (index === 0) {
+        ctx.moveTo(point.x, point.y);
+      } else {
+        ctx.lineTo(point.x, point.y);
+      }
+    });
+    ctx.closePath();
+
+    if (hasVisiblePoint) {
+      const landGradient = ctx.createLinearGradient(
+        canvas.width * 0.22,
+        canvas.height * 0.2,
+        canvas.width * 0.82,
+        canvas.height * 0.88,
+      );
+      landGradient.addColorStop(0, "rgba(238, 247, 222, 0.98)");
+      landGradient.addColorStop(0.52, "rgba(184, 216, 174, 0.95)");
+      landGradient.addColorStop(1, "rgba(96, 144, 118, 0.9)");
+      ctx.fillStyle = landGradient;
+      ctx.fill();
+      ctx.lineWidth = 2.4;
+      ctx.strokeStyle = "rgba(10, 39, 48, 0.58)";
+      ctx.stroke();
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+      ctx.stroke();
+    }
+  });
+}
+
+function drawCountryLines(radius) {
+  ctx.save();
+
+  if (countryBoundaryStatus === "loaded" && countryBoundaryLines?.length) {
+    ctx.fillStyle = "rgba(144, 180, 154, 0.76)";
+    ctx.strokeStyle = "rgba(144, 180, 154, 0.5)";
+    countryBoundaryLines.forEach((line) => drawGeoPolygon(line, radius));
+
+    ctx.lineWidth = 1.15;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.58)";
+    countryBoundaryLines.forEach((line) => drawGeoLine(line, radius));
+    ctx.lineWidth = 0.65;
+    ctx.strokeStyle = "rgba(56, 88, 70, 0.68)";
+    countryBoundaryLines.forEach((line) => drawGeoLine(line, radius));
+  } else {
+    ctx.lineWidth = 1.35;
+    ctx.strokeStyle = "rgba(10, 36, 44, 0.44)";
+    countryLines.forEach((line) => {
+      drawGeoLine(
+        line.map(([lon, lat]) => ({
+          lat,
+          lon,
+        })),
+        radius,
+      );
+    });
+  }
+
+  ctx.restore();
+}
+
+function drawIslands(radius) {
+  islands.forEach((island) => {
+    const point = project(island.lat, island.lon, radius);
+    if (!point.visible) {
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, island.radius, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(218, 237, 204, 0.95)";
+    ctx.fill();
+    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = "rgba(10, 39, 48, 0.52)";
+    ctx.stroke();
+  });
+}
+
+function drawMapLabels(radius) {
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  mapLabels.forEach((label) => {
+    const point = project(label.lat, label.lon, radius);
+    const minimumDepth = label.type === "continent" ? 0.18 : 0.48;
+
+    if (!point.visible || point.z < minimumDepth) {
+      return;
+    }
+
+    const depth = Math.min(1, Math.max(0, point.z));
+    const fontSize = label.type === "continent" ? 21 + depth * 7 : 13 + depth * 4;
+    const alpha = label.type === "continent" ? 0.46 + depth * 0.28 : 0.36 + depth * 0.28;
+
+    ctx.font =
+      label.type === "continent"
+        ? `800 ${fontSize}px Segoe UI, Arial, sans-serif`
+        : `700 ${fontSize}px Segoe UI, Arial, sans-serif`;
+    ctx.lineWidth = label.type === "continent" ? 7 : 5;
+    ctx.strokeStyle = `rgba(3, 17, 28, ${alpha * 0.9})`;
+    ctx.fillStyle =
+      label.type === "continent"
+        ? `rgba(255, 244, 200, ${alpha})`
+        : `rgba(237, 247, 255, ${alpha})`;
+    ctx.strokeText(label.name, point.x, point.y);
+    ctx.fillText(label.name, point.x, point.y);
+  });
+
+  ctx.restore();
+}
+
+function drawRoute(radius) {
+  if (!route) {
+    return;
+  }
+
+  ctx.save();
+  ctx.shadowColor = "rgba(255, 194, 95, 0.72)";
+  ctx.shadowBlur = 18;
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "rgba(154, 190, 160, 0.42)";
+  drawGeoLine(route.points, radius);
+
+  ctx.shadowBlur = 9;
+  ctx.lineWidth = 3.5;
+  ctx.strokeStyle = "rgba(205, 226, 209, 0.96)";
+  drawGeoLine(route.points, radius);
+
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([9, 12]);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.78)";
+  drawGeoLine(route.points, radius);
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  const planeIndex = Math.min(route.points.length - 1, Math.floor(route.progress * (route.points.length - 1)));
+  const planePoint = route.points[planeIndex];
+  const nextPoint = route.points[Math.min(route.points.length - 1, planeIndex + 1)];
+  const current = project(planePoint.lat, planePoint.lon, radius);
+  const next = project(nextPoint.lat, nextPoint.lon, radius);
+
+  if (current.visible) {
+    const angle = Math.atan2(next.y - current.y, next.x - current.x);
+    drawPlane(current.x, current.y, angle);
+  }
+}
+
+function drawPlane(x, y, angle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.shadowColor = "rgba(154, 190, 160, 0.78)";
+  ctx.shadowBlur = 12;
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "rgba(6, 20, 32, 0.34)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(21, 0);
+  ctx.lineTo(-15, -10);
+  ctx.lineTo(-8, 0);
+  ctx.lineTo(-15, 10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#9abea0";
+  ctx.beginPath();
+  ctx.arc(-1, 0, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawMarkers(radius) {
+  const placedLabels = [];
+  const markerData = destinationPlaces
+    .filter((place) => place !== places.voyagenoce || honeymoonUnlocked)
+    .map((place) => ({
+      place,
+      point: project(place.lat, place.lon, radius),
+    }))
+    .filter(({ point }) => point.visible && point.z > 0.03)
+    .sort((a, b) => b.point.z - a.point.z);
+
+  markerData.forEach(({ place, point }) => {
+    const isOrigin = place === places.anzy;
+    drawMarkerPoint(point, isOrigin);
+  });
+
+  markerData.forEach(({ place, point }) => {
+    const isOrigin = place === places.anzy;
+    const label = place.name.trim();
+    const fontSize = isOrigin ? 22 : Math.max(13, Math.min(20, 14 + point.z * 7));
+    const placement = findLabelPlacement(label, point, fontSize, placedLabels, radius);
+
+    if (!placement) {
+      return;
+    }
+
+    placedLabels.push(placement.rect);
+    drawMarkerLabel(label, placement.x, placement.y, fontSize, isOrigin, placement.align);
+  });
+}
+
+function drawMarkerPoint(point, isOrigin) {
+  ctx.save();
+  ctx.shadowColor = isOrigin ? "rgba(154, 190, 160, 0.82)" : "rgba(99, 205, 255, 0.72)";
+  ctx.shadowBlur = 16;
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, isOrigin ? 17 : 14, 0, Math.PI * 2);
+  ctx.fillStyle = isOrigin ? "rgba(154, 190, 160, 0.22)" : "rgba(99, 205, 255, 0.16)";
+  ctx.fill();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, isOrigin ? 8 : 6, 0, Math.PI * 2);
+  ctx.fillStyle = isOrigin ? "#9abea0" : "#ffffff";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "rgba(3, 16, 28, 0.58)";
+  ctx.stroke();
+}
+
+function findLabelPlacement(label, point, fontSize, placedLabels, radius) {
+  ctx.font = `700 ${fontSize}px Segoe UI, Arial, sans-serif`;
+  const width = ctx.measureText(label).width;
+  const height = fontSize + 8;
+  const candidates = [];
+  const angles = [-35, 35, -145, 145, -90, 90, 0, 180, -65, 65, -115, 115];
+
+  [24, 42, 62, 84, 108].forEach((distance) => {
+    angles.forEach((angle) => {
+      const radians = toRad(angle);
+      const dx = Math.cos(radians) * distance;
+      const dy = Math.sin(radians) * distance;
+      const align = Math.abs(dx) < 12 ? "center" : dx < 0 ? "right" : "left";
+      candidates.push({ dx, dy, align });
+    });
+  });
+
+  for (const candidate of candidates) {
+    const x = point.x + candidate.dx;
+    const y = point.y + candidate.dy;
+    const left =
+      candidate.align === "right" ? x - width : candidate.align === "center" ? x - width / 2 : x;
+    const rect = {
+      left: left - 6,
+      top: y - height / 2 - 4,
+      right: left + width + 6,
+      bottom: y + height / 2 + 4,
+    };
+
+    const insideGlobe =
+      Math.hypot(rect.left - canvas.width / 2, rect.top - canvas.height / 2) < radius * 0.98 &&
+      Math.hypot(rect.right - canvas.width / 2, rect.bottom - canvas.height / 2) < radius * 0.98;
+
+    if (insideGlobe && !placedLabels.some((placed) => rectanglesOverlap(rect, placed))) {
+      return { x, y, align: candidate.align, rect };
+    }
+  }
+
+  return null;
+}
+
+function rectanglesOverlap(a, b) {
+  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+}
+
+function drawMarkerLabel(label, x, y, fontSize, isOrigin, align) {
+  ctx.save();
+  ctx.textAlign = align;
+  ctx.textBaseline = "middle";
+  ctx.font = `700 ${fontSize}px Segoe UI, Arial, sans-serif`;
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "rgba(3, 16, 28, 0.86)";
+  ctx.lineWidth = isOrigin ? 5 : 4;
+  ctx.strokeText(label, x, y);
+  ctx.fillText(label, x, y);
+  ctx.restore();
+}
+
+function animate(timestamp) {
+  const delta = Math.min(48, timestamp - lastTime);
+  lastTime = timestamp;
+
+  if (!drag) {
+    view.lat += (targetView.lat - view.lat) * 0.05;
+    view.lon = normalizeLon(view.lon + normalizeLon(targetView.lon - view.lon) * 0.05);
+  }
+
+  if (route) {
+    route.progress = Math.min(1, route.progress + delta / route.duration);
+    const followPoint = route.points[Math.floor(route.progress * (route.points.length - 1))];
+    targetView = { lat: followPoint.lat, lon: followPoint.lon };
+
+    if (route.progress >= 1) {
+      statusText.textContent = `Arrivée à ${route.to.name}.`;
+      if (!route.completed) {
+        route.completed = true;
+        window.setTimeout(() => showArrival(route.to), 420);
+      }
+    }
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawStars();
+  drawSphere(getGlobeRadius());
+  requestAnimationFrame(animate);
+}
+
+function showArrival(place) {
+  arrivalTitle.textContent = place.name;
+  arrivalDate.textContent = place.date ? place.date : "";
+  arrivalDescription.textContent = place.description;
+  startSlideshow(place);
+
+  if (arrivalDialog.open) {
+    return;
+  }
+
+  if (typeof arrivalDialog.showModal === "function") {
+    arrivalDialog.showModal();
+  } else {
+    arrivalDialog.setAttribute("open", "");
+  }
+}
+
+function startSlideshow(place) {
+  stopSlideshow();
+  currentSlides = Array.isArray(place.photos)
+    ? place.photos.filter((photo) => /\.(jpe?g|png|webp|gif)$/i.test(photo))
+    : [];
+  currentSlideIndex = 0;
+
+  if (!currentSlides.length) {
+    arrivalSlideshow.hidden = true;
+    arrivalImage.removeAttribute("src");
+    arrivalImage.alt = "";
+    slideCount.textContent = "";
+    return;
+  }
+
+  arrivalSlideshow.hidden = false;
+  renderSlide(place);
+
+  if (currentSlides.length > 1) {
+    slideshowTimer = window.setInterval(() => {
+      moveSlide(1, place);
+    }, 2000);
+  }
+}
+
+function stopSlideshow() {
+  if (slideshowTimer) {
+    window.clearInterval(slideshowTimer);
+    slideshowTimer = null;
+  }
+}
+
+function renderSlide(place) {
+  const slide = currentSlides[currentSlideIndex];
+  arrivalImage.src = slide;
+  arrivalImage.alt = `${place.imageAlt} ${currentSlideIndex + 1}`;
+  slideCount.textContent = `${currentSlideIndex + 1} / ${currentSlides.length}`;
+  previousSlideButton.hidden = currentSlides.length <= 1;
+  nextSlideButton.hidden = currentSlides.length <= 1;
+}
+
+function moveSlide(step, place = route?.to) {
+  if (!currentSlides.length || !place) {
+    return;
+  }
+
+  currentSlideIndex = (currentSlideIndex + step + currentSlides.length) % currentSlides.length;
+  renderSlide(place);
+}
+
+function moveSlideManually(step) {
+  const place = route?.to;
+  if (!place) {
+    return;
+  }
+
+  stopSlideshow();
+  moveSlide(step, place);
+
+  if (currentSlides.length > 1) {
+    slideshowTimer = window.setInterval(() => {
+      moveSlide(1, place);
+    }, 2000);
+  }
+}
+
+function openQuestDialog() {
+  travelTypeSelect.value = "";
+  continentChoiceSelect.value = "";
+  flightHoursSelect.value = "";
+  questMessage.textContent = "";
+  questOkButton.hidden = true;
+  questValidateButton.hidden = false;
+  
+const gif = document.getElementById("questGif");
+gif.style.display = "none";
+gif.src = "";
+
+  if (typeof questDialog.showModal === "function") {
+    questDialog.showModal();
+  } else {
+    questDialog.setAttribute("open", "");
+  }
+}
+
+function closeQuestDialog() {
+  questDialog.close();
+}
+
+function validateQuest() {
+  const isCorrect =
+    travelTypeSelect.value === "detente" &&
+    continentChoiceSelect.value === "oceanie" &&
+    flightHoursSelect.value === "15plus" &&
+    FAUNE.value === "REQUINS";
+	
+	
+// 👉 CAS : champs non remplis
+if (
+  travelTypeSelect.value === "" ||
+  continentChoiceSelect.value === "" ||
+  flightHoursSelect.value === "" ||
+  FAUNE.value === ""
+) {
+  const gif = document.getElementById("questGif");
+
+  questMessage.textContent = "HE HO !  Il en manque là , non ?? 😉";
+  gif.src = "GALERIE/manque.gif";
+  gif.style.display = "block";
+
+  questValidateButton.hidden = true;
+  questOkButton.hidden = false;
+
+  return; // ⛔ IMPORTANT : on stoppe ici
+}	
+
+  if (isCorrect) {
+    honeymoonUnlocked = true;
+    if (honeymoonOption) {
+      honeymoonOption.hidden = false;
+    }
+    questDialog.close();
+    destinationSelect.value = "voyagenoce";
+    startTrip("voyagenoce");
+    return;
+  }
+
+// 👉 CAS FAUX
+const gif = document.getElementById("questGif");
+
+// reset
+gif.style.display = "none";
+gif.src = "";
+
+// 🎯 Gestion des erreurs personnalisées
+if (travelTypeSelect.value === "sportif") {
+  questMessage.textContent = "Ca va, on a tout l'été pour courir 😅";
+  gif.src = "GALERIE/souffrir.gif";
+}
+
+else if (travelTypeSelect.value === "geek") {
+  questMessage.textContent = "Désolé, on va trouver une activité pour les deux 🤓";
+  gif.src = "GALERIE/drone.gif";
+}
+
+else if (travelTypeSelect.value === "Remise en forme") {
+  questMessage.textContent = "une prochaine fois peut etre 😅 ";
+  gif.src = "GALERIE/SPA.gif";
+}
+
+
+else {
+  questMessage.textContent =
+    "Désolé ce n'est pas dans les plans des mariés 😅";
+  gif.src = "GALERIE/cestnon.gif";
+}
+
+// afficher le GIF si défini
+if (gif.src) {
+  gif.style.display = "block";
+}
+
+questValidateButton.hidden = true;
+questOkButton.hidden = false;
+}
+
+function drawStars() {
+  const wash = ctx.createRadialGradient(
+    canvas.width * 0.54,
+    canvas.height * 0.48,
+    canvas.width * 0.12,
+    canvas.width * 0.5,
+    canvas.height * 0.5,
+    canvas.width * 0.72,
+  );
+  wash.addColorStop(0, "rgba(255, 255, 255, 0.46)");
+  wash.addColorStop(0.58, "rgba(232, 244, 239, 0.28)");
+  wash.addColorStop(1, "rgba(242, 226, 206, 0.18)");
+  ctx.fillStyle = wash;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let index = 0; index < 46; index += 1) {
+    const x = (index * 167) % canvas.width;
+    const y = (index * 251) % canvas.height;
+    const size = 1 + (index % 4) * 0.52;
+    ctx.fillStyle = `rgba(99, 206, 161, ${0.1 + (index % 5) * 0.035})`;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function startTrip(key) {
+  if (arrivalDialog.open) {
+    arrivalDialog.close();
+  }
+  stopSlideshow();
+
+  if (key === "voyagenoce" && !honeymoonUnlocked) {
+    destinationSelect.value = "";
+    route = null;
+    statusText.textContent = "Trouvez d'abord la destination des mariés.";
+    distanceText.textContent = "En attente";
+    return;
+  }
+
+  if (!key) {
+    route = null;
+    targetView = { lat: places.anzy.lat, lon: places.anzy.lon };
+    statusText.textContent = "Globe centré sur Anzy-le-Duc.";
+    distanceText.textContent = "En attente";
+    return;
+  }
+
+  const destination = places[key];
+  const km = distanceKm(places.anzy, destination);
+  route = {
+    from: places.anzy,
+    to: destination,
+    points: greatCircle(places.anzy, destination),
+    progress: 0,
+    duration: key === "rome" ? 5200 : 7600,
+    completed: false,
+  };
+  targetView = { lat: places.anzy.lat, lon: places.anzy.lon };
+  statusText.textContent = `Décollage vers ${destination.name}.`;
+  distanceText.textContent = `${km.toLocaleString("fr-FR")} km environ`;
+}
+
+destinationSelect.addEventListener("change", (event) => {
+  startTrip(event.target.value);
+});
+
+canvas.addEventListener("pointerdown", (event) => {
+  drag = {
+    x: event.clientX,
+    y: event.clientY,
+    lat: view.lat,
+    lon: view.lon,
+  };
+  route = null;
+  canvas.setPointerCapture(event.pointerId);
+});
+
+canvas.addEventListener("pointermove", (event) => {
+  if (!drag) {
+    return;
+  }
+
+  const dx = event.clientX - drag.x;
+  const dy = event.clientY - drag.y;
+  view.lon = normalizeLon(drag.lon - dx * 0.24);
+  view.lat = Math.max(-82, Math.min(82, drag.lat + dy * 0.18));
+  targetView = { ...view };
+});
+
+canvas.addEventListener("wheel", (event) => {
+  event.preventDefault();
+
+  const zoomSpeed = 0.0015;
+
+  view.zoom -= event.deltaY * zoomSpeed;
+
+  // limites mini / maxi
+  view.zoom = Math.max(0.6, Math.min(3, view.zoom));
+});
+
+
+canvas.addEventListener("pointerup", () => {
+  drag = null;
+});
+
+canvas.addEventListener("pointercancel", () => {
+  drag = null;
+});
+
+closeDialogButton.addEventListener("click", () => {
+  stopSlideshow();
+  arrivalDialog.close();
+});
+
+arrivalDialog.addEventListener("click", (event) => {
+  if (event.target === arrivalDialog) {
+    stopSlideshow();
+    arrivalDialog.close();
+  }
+});
+
+arrivalDialog.addEventListener("close", () => {
+  stopSlideshow();
+});
+
+previousSlideButton.addEventListener("click", () => {
+  moveSlideManually(-1);
+});
+
+nextSlideButton.addEventListener("click", () => {
+  moveSlideManually(1);
+});
+
+questButton.addEventListener("click", () => {
+  openQuestDialog();
+});
+
+questCloseButton.addEventListener("click", () => {
+  closeQuestDialog();
+});
+
+questValidateButton.addEventListener("click", () => {
+  validateQuest();
+});
+
+questOkButton.addEventListener("click", () => {
+  closeQuestDialog();
+});
+
+questDialog.addEventListener("click", (event) => {
+  if (event.target === questDialog) {
+    closeQuestDialog();
+  }
+});
+
+loadCountryBoundaries();
+requestAnimationFrame(animate);

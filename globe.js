@@ -65,7 +65,7 @@ const places = {
     ],
     imageAlt: "Photo de Cuzco",
     description:
-      "Ancienne capitale de l'Empire inca, Cuzco se dresse au coeur des Andes. Ses ruelles melent murs incas, eglises coloniales et places animees. La ville est aussi l'une des portes d'entree vers la Vallee sacree.",
+      "Magnifique ville avec de decilieux Pisco",
   },
   rome: {
     name: "Rome",

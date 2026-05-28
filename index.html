@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Globe interactif | D&eacute;part d'Anzy-le-Duc</title>
+    <meta
+      name="description"
+      content="Globe interactif HTML5 centr&eacute; sur Anzy-le-Duc avec animation de vol vers Cuzco ou Rome."
+    />
+    <link rel="stylesheet" href="globe.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="globe-stage" aria-label="Globe ">
+        <canvas id="globe" width="1200" height="1200"></canvas>
+      </section>
+
+      <aside class="control-panel" aria-label="Selection du voyage">
+        <section class="quest-panel" aria-label="Trouver la destination des mariés">
+          <p class="eyebrow">Trouvez la destination des Mari&eacute;s</p>
+          <button class="button primary" id="questButton" type="button">Jouer</button>
+        </section>
+
+        <p class="eyebrow">D&eacute;part</p>
+        <h1>Anzy-le-Duc</h1>
+		<h2>AE Airlines</h2>
+        <p class="lede">
+          Choisissez une destination et suivez le vol sur la sph&egrave;re. Vous pouvez aussi faire
+          tourner le globe &agrave; la souris ou au doigt.
+        </p>
+
+        <label for="destination">Destination</label>
+        <select id="destination">
+			<option value="">Choisir une destination</option>
+			<option value="arequipa">Arequipa</option>
+			<option value="copenhague">Copenhague</option>
+			<option value="cuzco">Cuzco</option>
+			<option value="goteborg">Gotéberg</option>
+			<option value="gotland">Gotland</option>
+			<option value="ileMaurice">Ile Maurice</option>
+			<option value="kilimandjaro">Kilimandjaro</option>
+			<option value="laSoufriere">La soufrière</option>
+			<option value="laponie">Laponie</option>
+			<option value="leCap">Le cap</option>
+			<option value="lima">Lima</option>
+			<option value="machuPicchu">Machu Picchu</option>
+			<option value="malmo">Malmö</option>
+			<option value="montreal">Montréal</option>
+			<option value="pitonFournaise">Piton de la fournaise</option>
+			<option value="porto">Porto</option>
+			<option value="puno">Puno</option>
+			<option value="reserveCousteau">Réserve Cousteau</option>
+			<option value="rome">Rome</option>
+			<option value="salkantay">Salkantay</option>
+			<option value="seychelles">Seychelles</option>
+			<option value="sligo">Sligo</option>
+			<option value="titiKaka">Titi Kaka</option>
+			<option value="zanzibar">Zanzibar</option>
+        </select>
+
+        <div class="status-line" aria-live="polite">
+          <span id="statusText">Globe centr&eacute; sur Anzy-le-Duc.</span>
+        </div>
+
+        <dl class="trip-stats">
+          <div>
+            <dt>Origine</dt>
+            <dd>Prieuré d'Anzy-le-Duc, Sa&ocirc;ne-et-Loire</dd>
+          </div>
+          <div>
+            <dt>Vol</dt>
+            <dd id="distanceText">En attente</dd>
+          </div>
+        </dl>
+      </aside>
+    </main>
+
+    <dialog class="arrival-dialog" id="arrivalDialog" aria-labelledby="arrivalTitle">
+      <button class="dialog-close" type="button" aria-label="Fermer la fen&ecirc;tre">&times;</button>
+      <div class="arrival-slideshow" id="arrivalSlideshow" hidden>
+        <button class="slide-button previous" type="button" aria-label="Photo pr&eacute;c&eacute;dente">&lsaquo;</button>
+        <img id="arrivalImage" src="" alt="" />
+        <button class="slide-button next" type="button" aria-label="Photo suivante">&rsaquo;</button>
+        <span class="slide-count" id="slideCount"></span>
+      </div>
+      <div class="arrival-content">
+        <p class="eyebrow arrival-meta">
+          <span>Arriv&eacute;e</span>
+          <span class="arrival-date" id="arrivalDate"></span>
+        </p>
+        <h2 id="arrivalTitle"></h2>
+        <p id="arrivalDescription"></p>
+      </div>
+    </dialog>
+
+    <dialog class="quest-dialog" id="questDialog" aria-labelledby="questTitle">
+      <button class="dialog-close quest-close" type="button" aria-label="Fermer la fen&ecirc;tre">
+        &times;
+      </button>
+      <div class="quest-content">
+        <p class="eyebrow">Trouvez la destination du voyage de noce</p>
+        <h2 id="questTitle">Connaissez vous bien les mariés ?</h2>
+
+        <label for="travelType">Type de voyage</label>
+        <select id="travelType">
+          <option value="">Choisir</option>
+          <option value="sportif">Sportif : Randonn&eacute;e,Rafting, trail</option>
+          <option value="geek">Geek : Stage de drone et d'impression 3D</option>
+          <option value="detente">D&eacute;tente : Plage, cocotiers et Mojito</option>
+          <option value="Remise en forme">Remise en forme : SPA, Manucure , piscine à bulles, gommage aux alges</option>		  
+        </select>
+
+        <label for="continentChoice">Continent</label>
+        <select id="continentChoice">
+          <option value="">Choisir</option>
+          <option value="afrique">Afrique</option>
+          <option value="ameriqueNord">Am&eacute;rique du Nord</option>
+          <option value="ameriqueSud">Am&eacute;rique du Sud</option>
+		  <option value="oceanie">Oc&eacute;anie</option>
+          <option value="antarctique">Antarctique</option>
+          <option value="asie">Asie</option>
+          <option value="europe">Europe</option>
+
+        </select>
+
+        <label for="flightHours">Nombre d'heure de vol</label>
+        <select id="flightHours">
+          <option value="">Choisir</option>
+          <option value="01-10">Entre 01 et 10</option>
+          <option value="10-15">De 10 &agrave; 15</option>
+          <option value="15plus">Au del&agrave; de 15</option>
+        </select>
+		
+		<label for="FAUNE">Ils vont voir</label>
+        <select id="FAUNE">
+          <option value="">Choisir</option>
+          <option value="Alligators">des Alligators</option>
+		  <option value="REQUINS">des requins à pointe noire</option>
+          <option value="Pandas">des Pandas</option>
+          <option value="autruches">des autruches</option>
+		  <option value="lions">des lions</option>
+
+        </select>
+		
+
+
+        <p class="quest-message" id="questMessage" aria-live="polite"></p>
+		<img id="questGif" src="" alt="reaction" style="display:none; width:400px; margin-top:10px;" />
+        <div class="quest-actions">
+          <button class="button primary" id="questValidate" type="button">Valider</button>
+          <button class="button ghost dark" id="questOk" type="button" hidden>Fermer</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="globe.js"></script>
+  </body>
+</html>

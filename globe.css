@@ -244,6 +244,32 @@ body {
   text-transform: none;
 }
 
+.visited-button,
+.reset-votes {
+  min-height: 32px;
+  border: 1px solid rgba(24, 37, 43, 0.16);
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #e6e8e6;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.visited-button.visited {
+  color: #fff;
+  background: #648b6d;
+}
+
+.reset-votes {
+  width: 100%;
+  margin-top: 18px;
+  border-radius: 8px;
+  background: rgba(154, 190, 160, 0.16);
+}
+
 .quest-message {
   min-height: 24px;
   margin: 4px 0 0;
@@ -376,4 +402,24 @@ dd {
   #globe {
     width: min(92vw, 620px);
   }
+}
+
+.error-dialog {
+  text-align: center;
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.error-dialog img {
+  max-width: 300px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.error-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
 }

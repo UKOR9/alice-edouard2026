@@ -74,8 +74,27 @@
             <dd id="distanceText">En attente</dd>
           </div>
         </dl>
+        <button class="reset-votes" id="resetVotesButton" type="button">
+          R&eacute;initialiser les compteurs
+        </button>
       </aside>
     </main>
+
+<dialog id="errorDialog">
+  <button class="error-close">✕</button>
+
+  <h2>HE HO , qu'est ce que tu fais là ? demi tour !</h2>
+
+  <img
+    id="errorGif"
+    src="GALERIE/pris.gif"
+    alt="Erreur"
+    style="max-width:300px"
+  >
+
+  <p id="errorMessage"></p>
+</dialog>
+
 
     <dialog class="arrival-dialog" id="arrivalDialog" aria-labelledby="arrivalTitle">
       <button class="dialog-close" type="button" aria-label="Fermer la fen&ecirc;tre">&times;</button>
@@ -89,6 +108,8 @@
         <p class="eyebrow arrival-meta">
           <span>Arriv&eacute;e</span>
           <span class="arrival-date" id="arrivalDate"></span>
+          <button class="visited-button" id="visitedButton" type="button">
+            J'ai visité ce lieu
         </p>
         <h2 id="arrivalTitle"></h2>
         <p id="arrivalDescription"></p>
@@ -146,6 +167,9 @@
 		
 
 
+
+
+
         <p class="quest-message" id="questMessage" aria-live="polite"></p>
 		<img id="questGif" src="" alt="reaction" style="display:none; width:300px; margin-top:10px;" />
         <div class="quest-actions">
@@ -155,6 +179,7 @@
       </div>
     </dialog>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="globe.js"></script>
   </body>
 </html>

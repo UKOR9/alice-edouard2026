@@ -6,6 +6,7 @@ const distanceText = document.querySelector("#distanceText");
 const arrivalDialog = document.querySelector("#arrivalDialog");
 const arrivalTitle = document.querySelector("#arrivalTitle");
 const arrivalDate = document.querySelector("#arrivalDate");
+const visitedButton = document.querySelector("#visitedButton");
 const arrivalDescription = document.querySelector("#arrivalDescription");
 const arrivalImage = document.querySelector("#arrivalImage");
 const arrivalSlideshow = document.querySelector("#arrivalSlideshow");
@@ -19,10 +20,26 @@ const questCloseButton = document.querySelector(".quest-close");
 const travelTypeSelect = document.querySelector("#travelType");
 const continentChoiceSelect = document.querySelector("#continentChoice");
 const flightHoursSelect = document.querySelector("#flightHours");
+const fauneSelect = document.querySelector("#FAUNE");
 const questValidateButton = document.querySelector("#questValidate");
 const questOkButton = document.querySelector("#questOk");
 const questMessage = document.querySelector("#questMessage");
 const honeymoonOption = destinationSelect.querySelector('option[value="voyagenoce"]');
+const resetVotesButton = document.querySelector("#resetVotesButton");
+
+const VOTE_STORAGE_KEY = "ae-airlines-destination-votes";
+const VISITED_STORAGE_KEY = "ae-airlines-visited-destinations";
+const ROUTE_MIDPOINT_ZOOM = 1.85;
+
+
+const SUPABASE_URL = "https://ikymbjpsbtnvyptdgakp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlreW1ianBzYnRudnlwdGRnYWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzM3ODAsImV4cCI6MjA5NTY0OTc4MH0.30C5SkKcbvenWnJn4NGA7VDObX_yxCIszq2dYeQHSo0";
+const voteClient = window.supabase?.createClient?.(SUPABASE_URL, SUPABASE_ANON_KEY) || null;
+
+
+const errorDialog = document.querySelector("#errorDialog");
+const errorMessage = document.querySelector("#errorMessage");
+const errorCloseButton = document.querySelector(".error-close");
 
 let countryBoundaryLines = null;
 let countryBoundaryStatus = "loading";
@@ -156,7 +173,7 @@ ileMaurice: {
 
 kilimandjaro: {
   name: "kilimandjaro",
-  date: "A definir",
+  date: "14/07/2018",
   lat: -3.0674,
   lon: 37.3556,
     photos: [
@@ -171,7 +188,7 @@ kilimandjaro: {
 
 laSoufriere: {
   name: "La soufrière",
-  date: "A definir",
+  date: "25/05/2025",
   lat: 16.0444,
   lon: -61.6644,
     photos: [
@@ -409,6 +426,11 @@ voyagenoce: {
 };
 
 const destinationPlaces = Object.values(places).filter((place) => place.lat && place.lon);
+const destinationEntries = Object.entries(places).filter(([, place]) => place.lat && place.lon);
+
+destinationEntries.forEach(([key, place]) => {
+  place.key = key;
+});
 
 const landMasses = [
   [
@@ -729,10 +751,28 @@ let currentSlides = [];
 let currentSlideIndex = 0;
 let slideshowTimer = null;
 let honeymoonUnlocked = false;
+let voteCounts = readStoredJson(VOTE_STORAGE_KEY, {});
+let visitedDestinations = readStoredJson(VISITED_STORAGE_KEY, {});
+let activeArrivalPlace = null;
+let gesture = null;
 
 if (honeymoonOption) {
   honeymoonOption.hidden = true;
 }
+
+
+function showErrorDialog(message) {
+
+  errorMessage.textContent = message;
+
+  if (typeof errorDialog.showModal === "function") {
+    errorDialog.showModal();
+  } else {
+    errorDialog.setAttribute("open", "");
+  }
+}
+
+
 
 function getTouchDistance(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
@@ -741,6 +781,119 @@ function getTouchDistance(touches) {
   return Math.hypot(dx, dy);
 }
 
+function readStoredJson(key, fallback) {
+  try {
+    const rawValue = window.localStorage.getItem(key);
+    return rawValue ? JSON.parse(rawValue) : fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function writeStoredJson(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    // Les votes continuent a fonctionner en memoire si le stockage local est bloque.
+  }
+}
+
+
+
+
+async function loadVotes() {
+  if (!voteClient) {
+    console.warn("Supabase n'est pas charge, utilisation des votes locaux.");
+    return;
+  }
+
+  try {
+    const { data, error } = await voteClient.rpc("get_vote_counts");
+    if (error) {
+      throw error;
+    }
+
+    voteCounts = Object.fromEntries((data || []).map((row) => [row.destination, row.count]));
+    writeStoredJson(VOTE_STORAGE_KEY, voteCounts);
+  } catch (error) {
+    console.warn("Compteurs Supabase indisponibles, utilisation du stockage local.", error);
+  }
+}
+
+async function saveVote(destinationKey) {
+
+  console.log("saveVote()", destinationKey);
+
+  visitedDestinations[destinationKey] = 1;
+  writeStoredJson(VISITED_STORAGE_KEY, visitedDestinations);
+
+  if (!voteClient) {
+    console.warn("Pas de client Supabase");
+    return;
+  }
+
+  try {
+
+    console.log("Envoi RPC vote_destination");
+
+    const { data, error } = await voteClient.rpc(
+      "vote_destination",
+      {
+        p_destination: destinationKey,
+      }
+    );
+
+    console.log("RPC DATA =", data);
+    console.log("RPC ERROR =", error);
+
+    if (error) {
+      throw error;
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Erreur vote_destination :",
+      error
+    );
+  }
+  loadVotes();
+}
+
+async function resetVotes() {
+  const code = window.prompt("Code de réinitialisation");
+  if (!code) return;
+
+  const { error } = await voteClient.rpc("reset_vote_counts", {
+    p_code: code,
+  });
+
+if (error) {
+
+  console.error(
+    "Reset votes  dd error:",
+    error
+  );
+
+  showErrorDialog(
+    error.message || "Erreur inconnue"
+  );
+
+  return;
+}
+
+  // recharge propre depuis la DB
+  const { data } = await voteClient.rpc("get_vote_counts");
+
+  voteCounts = Object.fromEntries(
+    (data ?? []).map((row) => [row.destination, row.count])
+  );
+
+  visitedDestinations = {};
+  writeStoredJson(VISITED_STORAGE_KEY, visitedDestinations);
+  writeStoredJson(VOTE_STORAGE_KEY, voteCounts);
+  updateVisitedButton(activeArrivalPlace);
+}
 
 function toRad(value) {
   return (value * Math.PI) / 180;
@@ -1319,6 +1472,7 @@ function drawPlane(x, y, angle) {
 
 function drawMarkers(radius) {
   const placedLabels = [];
+  const topVoteCount = Math.max(0, ...Object.values(voteCounts).map((value) => Number(value) || 0));
   const markerData = destinationPlaces
     .filter((place) => place !== places.voyagenoce || honeymoonUnlocked)
     .map((place) => ({
@@ -1335,7 +1489,9 @@ function drawMarkers(radius) {
 
   markerData.forEach(({ place, point }) => {
     const isOrigin = place === places.anzy;
-    const label = place.name.trim();
+    const voteCount = voteCounts[place.key] || 0;
+    const label = `${place.name.trim()}${voteCount > 0 ? ` : +${voteCount}` : ""}`;
+    const isTopVoted = voteCount > 0 && voteCount === topVoteCount;
     const fontSize = isOrigin ? 22 : Math.max(13, Math.min(20, 14 + point.z * 7));
     const placement = findLabelPlacement(label, point, fontSize, placedLabels, radius);
 
@@ -1344,7 +1500,7 @@ function drawMarkers(radius) {
     }
 
     placedLabels.push(placement.rect);
-    drawMarkerLabel(label, placement.x, placement.y, fontSize, isOrigin, placement.align);
+    drawMarkerLabel(label, placement.x, placement.y, fontSize, isOrigin, placement.align, isTopVoted);
   });
 }
 
@@ -1412,12 +1568,12 @@ function rectanglesOverlap(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-function drawMarkerLabel(label, x, y, fontSize, isOrigin, align) {
+function drawMarkerLabel(label, x, y, fontSize, isOrigin, align, isTopVoted) {
   ctx.save();
   ctx.textAlign = align;
   ctx.textBaseline = "middle";
   ctx.font = `700 ${fontSize}px Segoe UI, Arial, sans-serif`;
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = isTopVoted ? "#d2a447" : "#ffffff";
   ctx.strokeStyle = "rgba(3, 16, 28, 0.86)";
   ctx.lineWidth = isOrigin ? 5 : 4;
   ctx.strokeText(label, x, y);
@@ -1432,21 +1588,45 @@ function animate(timestamp) {
   if (!drag) {
     view.lat += (targetView.lat - view.lat) * 0.05;
     view.lon = normalizeLon(view.lon + normalizeLon(targetView.lon - view.lon) * 0.05);
+    view.zoom += ((targetView.zoom ?? view.zoom) - view.zoom) * 0.05;
   }
 
   if (route) {
-    route.progress = Math.min(1, route.progress + delta / route.duration);
-    const followPoint = route.points[Math.floor(route.progress * (route.points.length - 1))];
-    targetView = { lat: followPoint.lat, lon: followPoint.lon };
 
-    if (route.progress >= 1) {
-      statusText.textContent = `Arrivée à ${route.to.name}.`;
-      if (!route.completed) {
-        route.completed = true;
-        window.setTimeout(() => showArrival(route.to), 420);
-      }
+  route.progress = Math.min(
+    1,
+    route.progress + delta / route.duration
+  );
+
+  const followPoint =
+    route.points[
+      Math.floor(
+        route.progress * (route.points.length - 1)
+      )
+    ];
+
+  // centrage de la caméra
+  targetView.lat = followPoint.lat;
+  targetView.lon = followPoint.lon;
+
+  // zoom automatique UNE SEULE FOIS à mi-course
+  if (
+    route.progress >= 0.5 &&
+    !route.midZoomDone
+  ) {
+    route.midZoomDone = true;
+    targetView.zoom = ROUTE_MIDPOINT_ZOOM;
+  }
+
+  if (route.progress >= 1) {
+    statusText.textContent = `Arrivée à ${route.to.name}.`;
+
+    if (!route.completed) {
+      route.completed = true;
+      window.setTimeout(() => showArrival(route.to), 420);
     }
   }
+}
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawStars();
@@ -1455,9 +1635,11 @@ function animate(timestamp) {
 }
 
 function showArrival(place) {
+  activeArrivalPlace = place;
   arrivalTitle.textContent = place.name;
   arrivalDate.textContent = place.date ? place.date : "";
   arrivalDescription.textContent = place.description;
+  updateVisitedButton(place);
   startSlideshow(place);
 
   if (arrivalDialog.open) {
@@ -1471,6 +1653,32 @@ function showArrival(place) {
   }
 }
 
+function updateVisitedButton(place) {
+  if (!visitedButton || !place?.key) {
+    return;
+  }
+
+  const hasVisited = visitedDestinations[place.key] === 1;
+  visitedButton.classList.toggle("visited", hasVisited);
+  visitedButton.disabled = hasVisited;
+  visitedButton.textContent = hasVisited ? "Lieu visité" : "J'ai visité ce lieu";
+}
+
+async function voteForActiveDestination() {
+
+  console.log("activeArrivalPlace =", activeArrivalPlace);
+
+  if (!activeArrivalPlace?.key || visitedDestinations[activeArrivalPlace.key] === 1) {
+    console.warn("Aucune destination active");
+    return;
+  }
+
+  console.log("Vote pour :", activeArrivalPlace.key);
+
+  await saveVote(activeArrivalPlace.key);
+
+  updateVisitedButton(activeArrivalPlace);
+}
 function startSlideshow(place) {
   stopSlideshow();
   currentSlides = Array.isArray(place.photos)
@@ -1565,7 +1773,7 @@ function validateQuest() {
     travelTypeSelect.value === "detente" &&
     continentChoiceSelect.value === "oceanie" &&
     flightHoursSelect.value === "15plus" &&
-    FAUNE.value === "REQUINS";
+    fauneSelect.value === "REQUINS";
 	
 	
 // 👉 CAS : champs non remplis
@@ -1573,7 +1781,7 @@ if (
   travelTypeSelect.value === "" ||
   continentChoiceSelect.value === "" ||
   flightHoursSelect.value === "" ||
-  FAUNE.value === ""
+  fauneSelect.value === ""
 ) {
   const gif = document.getElementById("questGif");
 
@@ -1679,13 +1887,16 @@ function startTrip(key) {
 
   if (!key) {
     route = null;
-    targetView = { lat: places.anzy.lat, lon: places.anzy.lon };
+    targetView = { lat: places.anzy.lat, lon: places.anzy.lon, zoom: 1 };
     statusText.textContent = "Globe centré sur Anzy-le-Duc.";
     distanceText.textContent = "En attente";
     return;
   }
 
   const destination = places[key];
+  if (!destination) {
+    return;
+  }
   const km = distanceKm(places.anzy, destination);
   route = {
     from: places.anzy,
@@ -1694,14 +1905,18 @@ function startTrip(key) {
     progress: 0,
     duration: key === "rome" ? 5200 : 7600,
     completed: false,
+    startZoom: view.zoom,
   };
-  targetView = { lat: places.anzy.lat, lon: places.anzy.lon };
+  targetView = { lat: places.anzy.lat, lon: places.anzy.lon, zoom: view.zoom };
   statusText.textContent = `Décollage vers ${destination.name}.`;
   distanceText.textContent = `${km.toLocaleString("fr-FR")} km environ`;
 }
 
 destinationSelect.addEventListener("change", (event) => {
   startTrip(event.target.value);
+  if (event.target.value && window.matchMedia("(max-width: 900px)").matches) {
+    canvas.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 });
 
 canvas.addEventListener("pointerdown", (event) => {
@@ -1738,6 +1953,38 @@ canvas.addEventListener("wheel", (event) => {
   view.zoom = Math.max(0.6, Math.min(3, view.zoom));
 });
 
+canvas.addEventListener(
+  "touchstart",
+  (event) => {
+    if (event.touches.length === 2) {
+      gesture = {
+        distance: getTouchDistance(event.touches),
+        zoom: view.zoom,
+      };
+      drag = null;
+    }
+  },
+  { passive: false },
+);
+
+canvas.addEventListener(
+  "touchmove",
+  (event) => {
+    if (event.touches.length === 2 && gesture) {
+      event.preventDefault();
+      const nextDistance = getTouchDistance(event.touches);
+      view.zoom = Math.max(0.6, Math.min(3, gesture.zoom * (nextDistance / gesture.distance)));
+      targetView = { ...targetView, zoom: view.zoom };
+    }
+  },
+  { passive: false },
+);
+
+canvas.addEventListener("touchend", (event) => {
+  if (event.touches.length < 2) {
+    gesture = null;
+  }
+});
 
 canvas.addEventListener("pointerup", () => {
   drag = null;
@@ -1750,17 +1997,32 @@ canvas.addEventListener("pointercancel", () => {
 closeDialogButton.addEventListener("click", () => {
   stopSlideshow();
   arrivalDialog.close();
+  
 });
 
 arrivalDialog.addEventListener("click", (event) => {
   if (event.target === arrivalDialog) {
     stopSlideshow();
     arrivalDialog.close();
+	
   }
+  
 });
 
 arrivalDialog.addEventListener("close", () => {
   stopSlideshow();
+
+  destinationSelect.value = "";
+  route = null;
+
+  targetView = {
+    lat: places.anzy.lat,
+    lon: places.anzy.lon,
+    zoom: 1,
+  };
+
+  statusText.textContent = "Globe centré sur Anzy-le-Duc.";
+  distanceText.textContent = "En attente";
 });
 
 previousSlideButton.addEventListener("click", () => {
@@ -1771,12 +2033,34 @@ nextSlideButton.addEventListener("click", () => {
   moveSlideManually(1);
 });
 
+visitedButton.addEventListener("click", () => {
+  voteForActiveDestination();
+});
+
+
+resetVotesButton.addEventListener("click", () => {
+  resetVotes();
+});
+
 questButton.addEventListener("click", () => {
   openQuestDialog();
 });
 
 questCloseButton.addEventListener("click", () => {
+
   closeQuestDialog();
+
+  destinationSelect.value = "";
+  route = null;
+
+  targetView = {
+    lat: places.anzy.lat,
+    lon: places.anzy.lon,
+    zoom: 1,
+  };
+
+  statusText.textContent = "Globe centré sur Anzy-le-Duc.";
+  distanceText.textContent = "En attente";
 });
 
 questValidateButton.addEventListener("click", () => {
@@ -1785,6 +2069,18 @@ questValidateButton.addEventListener("click", () => {
 
 questOkButton.addEventListener("click", () => {
   closeQuestDialog();
+  
+  destinationSelect.value = "";
+  route = null;
+
+  targetView = {
+    lat: places.anzy.lat,
+    lon: places.anzy.lon,
+    zoom: 1,
+  };
+
+  statusText.textContent = "Globe centré sur Anzy-le-Duc.";
+  distanceText.textContent = "En attente";
 });
 
 questDialog.addEventListener("click", (event) => {
@@ -1793,5 +2089,11 @@ questDialog.addEventListener("click", (event) => {
   }
 });
 
+
+errorCloseButton.addEventListener("click", () => {
+  errorDialog.close();
+});
+
+loadVotes();
 loadCountryBoundaries();
 requestAnimationFrame(animate);

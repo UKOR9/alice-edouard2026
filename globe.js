@@ -79,10 +79,11 @@ const places = {
     "GALERIE/CU1.jpg",
 	"GALERIE/CU2.jpg",
     "GALERIE/CU3.jpg",
+	"GALERIE/CU4.jpg",
     ],
     imageAlt: "Photo de Cuzco",
     description:
-      "Ancienne capitale de l'Empire inca, Cuzco se dresse au coeur des Andes. Ses ruelles melent murs incas, eglises coloniales et places animees. La ville est aussi l'une des portes d'entree vers la Vallee sacree.",
+      "Cuzco est une ville agréagle et la porte d'entrée vers la valée sacrée , et notre point de départ pour le trek du Salkantay",
   },
   rome: {
     name: "Rome",
@@ -91,10 +92,13 @@ const places = {
     lon: 12.4964,
     photos: [
     "GALERIE/RO1.jpg",
+	"GALERIE/RO2.jpg",
+	"GALERIE/RO3.jpg",
+	"GALERIE/RO4.jpg",
     ],
     imageAlt: "Photo de Rome",
     description:
-      "Rome est une capitale ou l'Antiquite reste visible a chaque detour. Le Colisee, les forums et les places baroques composent une ville dense et lumineuse. Chaque quartier donne l'impression de traverser plusieurs epoques.",
+      "Premier grand voyage à deux dans cette magnifique ville qu'est Rome. Le Forum, la basilique Saint-Pierre… nous avons pris le temps de tout voir.",
   },
 lima: {
     name: "lima",
@@ -108,27 +112,28 @@ lima: {
     ],
     imageAlt: "Photo de Lima",
     description:
-      "Lima est la capitale du Pérou, une vaste métropole côtière du Pacifique connue pour son riche patrimoine colonial, sa gastronomie réputée et son mélange d’histoire précolombienne et de vie urbaine moderne.",
+      "Capital du Pérou et point d'arrivée depuis lyon, la ville vaut le coup pour son histoire mais surtout pour sa gastronomie.",
   },
 
 copenhague: {
   name: "Copenhague",
-  date: "A definir",
+  date: "29/11/2024",
   lat: 55.6761,
   lon: 12.5683,
      photos: [
     "GALERIE/COP1.jpg",
 	"GALERIE/COP2.jpg",
     "GALERIE/COP3.jpg",
+	"GALERIE/COP4.jpg",
     ],
   imageAlt: "Photo de Copenhague",
   description:
-    "Copenhague est la capitale du Danemark, connue pour ses canaux, ses vélos et son ambiance nordique.",
+    "Copenhague en un weekend ca se fait bien et cela vaut vraiment le coup pendant les fêtes de fin d'année.",
 },
 
 goteborg: {
   name: "Gotéberg",
-  date: "Aout 2024",
+  date: "25/08/2024",
   lat: 57.7089,
   lon: 11.9746,
     photos: [
@@ -138,7 +143,7 @@ goteborg: {
     ],
   imageAlt: "Photo de Gotéberg",
   description:
-    "Gotéberg est une grande ville portuaire suédoise réputée pour son atmosphère conviviale.",
+    "Gotéberg est une grande ville portuaire et notre point d'arrivée depuis lyon les iles autour de la ville sont vraiment typiques de la suede",
 },
 
 gotland: {
@@ -153,7 +158,7 @@ gotland: {
     ],
   imageAlt: "Photo de Gotland",
   description:
-    "Gotland est une île suédoise connue pour ses paysages naturels et ses villages médiévaux.",
+    "Gotland est une île suédoise connue pour ses paysages naturels et ses villages médiévaux, et surtout connue pour ses moulin ",
 },
 
 ileMaurice: {
@@ -183,7 +188,7 @@ kilimandjaro: {
     ],
   imageAlt: "Photo de kilimandjaro",
   description:
-    "Le kilimandjaro est la plus haute montagne d’Afrique située en Tanzanie.",
+    "Le kilimandjaro, un vrai défi pour Alice, Edouard tentera peut être l'ascenssion un jour ",
 },
 
 laSoufriere: {
@@ -198,22 +203,20 @@ laSoufriere: {
     ],
   imageAlt: "Photo de La soufrière",
   description:
-    "La Soufrière est un volcan actif célèbre pour ses paysages naturels spectaculaires.",
+    "En Guadeloupe, on peut passer d’un soleil de plomb à des pluies diluviennes. Nous n’avons même pas pu voir le cratère.",
 },
 
 laponie: {
   name: "Laponie",
-  date: "A definir",
+  date: "01/01/2022",
   lat: 67.9222,
   lon: 26.5046,
     photos: [
-    "GALERIE/LA1.jpg",
-	"GALERIE/LA2.jpg",
-    "GALERIE/LA3.jpg",
+    "GALERIE/LAP1.jpg",
     ],
   imageAlt: "Photo de Laponie",
   description:
-    "La Laponie est une région nordique connue pour ses aurores boréales et ses paysages enneigés.",
+    "Alice est partie seule voir les rennes",
 },
 
 leCap: {
@@ -243,11 +246,11 @@ machuPicchu: {
   ],
   imageAlt: "Photo de Machu Picchu",
   description:
-    "Machu Picchu : 15/09/2025 après le trek du salkantay...",
+    "LE Machu Picchu, bien mérité après 4 jours de trek dans les montagnes Péruviennes",
 },
 malmo: {
   name: "Malmö",
-  date: "Aout 2024",
+  date: "19/08/2024",
   lat: 55.6050,
   lon: 13.0038,
     photos: [
@@ -258,7 +261,7 @@ malmo: {
     ],
   imageAlt: "Photo de Malmö",
   description:
-    "Malmö est une ville suédoise moderne reliée au Danemark par un célèbre pont.",
+    "Malmö, petite ville suédoise du sud.",
 },
 
 montreal: {
@@ -273,7 +276,7 @@ montreal: {
     ],
   imageAlt: "Photo de Montréal",
   description:
-    "Montréal est une grande ville canadienne connue pour sa culture et son ambiance francophone.",
+    "Une belle année d'étude",
 },
 
 pitonFournaise: {
@@ -288,7 +291,7 @@ pitonFournaise: {
     ],
   imageAlt: "Photo de Piton de la fournaise",
   description:
-    "Le Piton de la Fournaise est l’un des volcans les plus actifs du monde.",
+    "Le Piton de la Fournaise gravi moulte fois par Alice et les LZLL.",
 },
 
 porto: {
@@ -300,6 +303,7 @@ porto: {
     "GALERIE/PO1.jpg",
 	"GALERIE/PO2.jpg",
     "GALERIE/PO3.jpg",
+	"GALERIE/PO4.jpg",
     ],
   imageAlt: "Photo de Porto",
   description:
@@ -308,47 +312,48 @@ porto: {
 
 puno: {
   name: "Puno",
-  date: "A definir",
+  date: "11/09/2025",
   lat: -15.8402,
   lon: -70.0219,
     photos: [
-    "GALERIE/PU1.jpg",
-	"GALERIE/PU2.jpg",
-    "GALERIE/PU3.jpg",
+    "GALERIE/PUN1.jpg",
+
     ],
   imageAlt: "Photo de Puno",
   description:
-    "Puno est une ville péruvienne située près du lac Titicaca.",
+    "Puno est situé près du lac Titicaca.",
 },
 
 reserveCousteau: {
   name: "Réserve Cousteau",
-  date: "A definir",
+  date: "29/05/2025",
   lat: 16.1775,
   lon: -61.7750,
     photos: [
-    "GALERIE/RE1.jpg",
-	"GALERIE/RE2.jpg",
-    "GALERIE/RE3.jpg",
+    "GALERIE/COU1.jpg",
+    "GALERIE/COU2.jpg",
+    "GALERIE/COU3.jpg",
+    "GALERIE/COU4.jpg",	
     ],
   imageAlt: "Photo de Réserve Cousteau",
   description:
-    "La Réserve Cousteau est un site marin réputé pour ses fonds sous-marins exceptionnels.",
+    "plongée magnifique dans l'eau turquoise et chaude des Caraibes",
 },
 
 salkantay: {
   name: "Salkantay",
-  date: "A definir",
+  date: "13/09/2025",
   lat: -13.3402,
   lon: -72.5449,
     photos: [
     "GALERIE/SAL1.jpg",
 	"GALERIE/SAL2.jpg",
     "GALERIE/SAL3.jpg",
+	"GALERIE/SAL4.jpg",
     ],
   imageAlt: "Photo de Salkantay",
   description:
-    "Salkantay est une montagne andine célèbre pour ses sentiers de randonnée.",
+    "trek allant jusqu'au MachuPicchu",
 },
 
 seychelles: {
@@ -387,9 +392,9 @@ titiKaka: {
   lat: -15.7650,
   lon: -69.4175,
     photos: [
-    "GALERIE/TI1.jpg",
-	"GALERIE/TI2.jpg",
-    "GALERIE/TI3.jpg",
+    "GALERIE/TIK1.jpg",
+	"GALERIE/TIK2.jpg",
+    "GALERIE/TIK3.jpg",
     ],
   imageAlt: "Photo de Titi Kaka",
   description:
@@ -402,9 +407,7 @@ zanzibar: {
   lat: -6.1659,
   lon: 39.2026,
     photos: [
-    "GALERIE/ZA1.jpg",
-	"GALERIE/ZA2.jpg",
-    "GALERIE/ZA3.jpg",
+    "GALERIE/ZAN1.jpg",
     ],
   imageAlt: "Photo de Zanzibar",
   description:
@@ -414,13 +417,15 @@ zanzibar: {
 
 voyagenoce: {
   name: "Polynesie Francaise ",
-  date: "08/06/2026",
+  date: "08/06/2026 ... ",
   lat: -17.6509,
   lon: -149.4260,
-  photos: ["GALERIE/TAHITI/tahiti-3976419327.jpg"],
+    photos: [
+    "GALERIE/BOR1.jpg",
+    ],
   imageAlt: "Photo de Tahiti",
   description:
-    "TAHITI !!! Nous voici arrivés à notre première destination à deux , l'ocasion de se détendre après ce magnifique mariage.merci d'avoir été là aujourd'hui pour nous entourer ",
+    "TAHITI !!!  Un petit voyage de noce bien mérité , l'ocasion de se détendre après ce magnifique mariage. Merci d'avoir été là aujourd'hui pour nous entourer. ",
 },
 
 };
@@ -1786,7 +1791,7 @@ if (
   const gif = document.getElementById("questGif");
 
   questMessage.textContent = "HE HO !  Il en manque là , non ?? 😉";
-  gif.src = "GALERIE/manque.gif";
+  gif.src = "GALERIE/Z_manque.gif";
   gif.style.display = "block";
 
   questValidateButton.hidden = true;
@@ -1814,26 +1819,34 @@ gif.style.display = "none";
 gif.src = "";
 
 // 🎯 Gestion des erreurs personnalisées
-if (travelTypeSelect.value === "sportif") {
+
+
+if (fauneSelect.value === "MACHU") {
+  questMessage.textContent = "Déjà fait c'était OUF !! ";
+  gif.src = "GALERIE/Z_PICCU.gif";
+}
+
+
+else if  (travelTypeSelect.value === "sportif") {
   questMessage.textContent = "Ca va, on a tout l'été pour courir 😅";
-  gif.src = "GALERIE/souffrir.gif";
+  gif.src = "GALERIE/Z_souffrir.gif";
 }
 
 else if (travelTypeSelect.value === "geek") {
   questMessage.textContent = "Désolé, on va trouver une activité pour les deux 🤓";
-  gif.src = "GALERIE/drone.gif";
+  gif.src = "GALERIE/Z_drone.gif";
 }
 
 else if (travelTypeSelect.value === "Remise en forme") {
   questMessage.textContent = "une prochaine fois peut etre 😅 ";
-  gif.src = "GALERIE/SPA.gif";
+  gif.src = "GALERIE/Z_SPA.gif";
 }
 
 
 else {
   questMessage.textContent =
     "Désolé ce n'est pas dans les plans des mariés 😅";
-  gif.src = "GALERIE/cestnon.gif";
+  gif.src = "GALERIE/Z_cestnon.gif";
 }
 
 // afficher le GIF si défini

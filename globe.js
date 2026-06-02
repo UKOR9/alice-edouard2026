@@ -68,7 +68,7 @@ const places = {
     ],
     imageAlt: "Photo d'Arequipa",
     description:
-      "Arequipa est la première étape des hauts plateaux nous ayant permis de nous acclimater à l'altidute pour profiter des Salinas à 5000 mètres d'altitude",
+      "Arequipa est la première étape des hauts plateaux, nous ayant permis de nous acclimater à l'altitude pour profiter des Salinas à 5 000 mètres d'altitude.",
   },
   cuzco: {
     name: "Cuzco",
@@ -83,7 +83,7 @@ const places = {
     ],
     imageAlt: "Photo de Cuzco",
     description:
-      "Cuzco est une ville agréagle et la porte d'entrée vers la valée sacrée , et notre point de départ pour le trek du Salkantay",
+      "Cuzco est une ville agréable et la porte d'entrée vers la valée sacrée , et notre point de départ pour le trek du Salkantay.",
   },
   rome: {
     name: "Rome",
@@ -112,7 +112,7 @@ lima: {
     ],
     imageAlt: "Photo de Lima",
     description:
-      "Capital du Pérou et point d'arrivée depuis lyon, la ville vaut le coup pour son histoire mais surtout pour sa gastronomie.",
+      "Capitale du Pérou et point d'arrivée depuis Lyon, la ville vaut le coup pour son histoire, mais surtout pour sa gastronomie..",
   },
 
 copenhague: {
@@ -128,7 +128,7 @@ copenhague: {
     ],
   imageAlt: "Photo de Copenhague",
   description:
-    "Copenhague en un weekend ca se fait bien et cela vaut vraiment le coup pendant les fêtes de fin d'année.",
+    "Copenhague en un week-end, ça se fait bien et cela vaut vraiment le coup pendant les fêtes de fin d'année.",
 },
 
 goteborg: {
@@ -143,7 +143,7 @@ goteborg: {
     ],
   imageAlt: "Photo de Gotéberg",
   description:
-    "Gotéberg est une grande ville portuaire et notre point d'arrivée depuis lyon les iles autour de la ville sont vraiment typiques de la suede",
+    "Göteborg est une grande ville portuaire et notre point d'arrivée depuis Lyon. Les îles autour de la ville sont vraiment typiques de la Suède.",
 },
 
 gotland: {
@@ -158,7 +158,7 @@ gotland: {
     ],
   imageAlt: "Photo de Gotland",
   description:
-    "Gotland est une île suédoise connue pour ses paysages naturels et ses villages médiévaux, et surtout connue pour ses moulin ",
+    "Gotland est une île suédoise connue pour ses paysages naturels et ses villages médiévaux, et surtout connue pour ses moulins. ",
 },
 
 ileMaurice: {
@@ -188,7 +188,7 @@ kilimandjaro: {
     ],
   imageAlt: "Photo de kilimandjaro",
   description:
-    "Le kilimandjaro, un vrai défi pour Alice, Edouard tentera peut être l'ascenssion un jour ",
+    "Le Kilimandjaro, un vrai défi pour Alice. Édouard tentera peut-être l'ascension un jour. ",
 },
 
 laSoufriere: {
@@ -216,7 +216,7 @@ laponie: {
     ],
   imageAlt: "Photo de Laponie",
   description:
-    "Alice est partie seule voir les rennes",
+    "Alice est partie seule voir les rennes.",
 },
 
 leCap: {
@@ -246,7 +246,7 @@ machuPicchu: {
   ],
   imageAlt: "Photo de Machu Picchu",
   description:
-    "LE Machu Picchu, bien mérité après 4 jours de trek dans les montagnes Péruviennes",
+    "Le Machu Picchu bien mérité après 4 jours de trek dans les montagnes péruviennes.",
 },
 malmo: {
   name: "Malmö",
@@ -291,7 +291,7 @@ pitonFournaise: {
     ],
   imageAlt: "Photo de Piton de la fournaise",
   description:
-    "Le Piton de la Fournaise gravi moulte fois par Alice et les LZLL.",
+    "Le Piton de la Fournaise, gravi maintes fois par Alice et les LZLL.",
 },
 
 porto: {
@@ -307,7 +307,7 @@ porto: {
     ],
   imageAlt: "Photo de Porto",
   description:
-    "Weekend de la demande en mariage ! le 14/04/2025 au bord de la mer par un temps radieu. ",
+    " le 14/04/2025, weekend de la demande en mariage ! au bord de la mer par un temps radieu. ",
 },
 
 puno: {
@@ -330,14 +330,14 @@ reserveCousteau: {
   lat: 16.1775,
   lon: -61.7750,
     photos: [
-    "GALERIE/COU1.jpg",
-    "GALERIE/COU2.jpg",
-    "GALERIE/COU3.jpg",
-    "GALERIE/COU4.jpg",	
+    "GALERIE/COU1.JPG",
+    "GALERIE/COU2.JPG",
+    "GALERIE/COU3.JPG",
+    "GALERIE/COU4.JPG",	
     ],
   imageAlt: "Photo de Réserve Cousteau",
   description:
-    "plongée magnifique dans l'eau turquoise et chaude des Caraibes",
+    "Plongée magnifique dans l'eau turquoise et chaude des Caraïbes.",
 },
 
 salkantay: {
@@ -353,7 +353,7 @@ salkantay: {
     ],
   imageAlt: "Photo de Salkantay",
   description:
-    "trek allant jusqu'au MachuPicchu",
+    "Trek de 4 jours jusqu'au Machu Picchu.",
 },
 
 seychelles: {
@@ -425,7 +425,7 @@ voyagenoce: {
     ],
   imageAlt: "Photo de Tahiti",
   description:
-    "TAHITI !!!  Un petit voyage de noce bien mérité , l'ocasion de se détendre après ce magnifique mariage. Merci d'avoir été là aujourd'hui pour nous entourer. ",
+    "TAHITI !!!  Un petit voyage de noces bien mérité, l'occasion de se détendre après ce magnifique mariage. Merci d'avoir été là aujourd'hui pour nous entourer. ",
 },
 
 };

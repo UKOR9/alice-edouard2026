@@ -276,7 +276,7 @@ montreal: {
     ],
   imageAlt: "Photo de Montréal",
   description:
-    "Une belle année d'étude",
+    "Une belle année d'étude pour Alice",
 },
 
 pitonFournaise: {

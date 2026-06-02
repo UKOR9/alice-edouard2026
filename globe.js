@@ -300,8 +300,8 @@ porto: {
   lat: 41.1579,
   lon: -8.6291,
     photos: [
-    "GALERIE/PO1.jpg",
-	"GALERIE/PO2.jpg",
+    "GALERIE/PO1.JPG",
+	"GALERIE/PO2.JPG",
     "GALERIE/PO3.jpg",
 	"GALERIE/PO4.jpg",
     ],

@@ -154,7 +154,7 @@ gotland: {
     photos: [
     "GALERIE/GOTLA1.jpg",
 	"GALERIE/GOTLA2.jpg",
-    "GALERIE/GOTLA3.jpg",
+    "GALERIE/GOTLA3.JPG",
     ],
   imageAlt: "Photo de Gotland",
   description:

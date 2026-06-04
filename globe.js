@@ -1498,7 +1498,7 @@ function drawMarkers(radius) {
     const label = `${place.name.trim()}${voteCount > 0 ? ` : +${voteCount}` : ""}`;
     const isTopVoted = voteCount > 0 && voteCount === topVoteCount;
 const fontSize = isOrigin
-  ? 28
+	  ? 40
   : Math.max(18, Math.min(30, 20 + point.z * 8));
     const placement = findLabelPlacement(label, point, fontSize, placedLabels, radius);
 
